@@ -43,7 +43,19 @@ typedef struct graph_{
 	char topology_name[32];
 	//This is an implementation of an special linked list
 	glthread_t node_list;
-};
+}graph_t;
+
+//Function to create a new graph!
+graph_t *create_new_graph(char *topology_name);
+
+node_t *create_graph_node(graph_t *graph, char *node_name);
+
+void insert_link_between_two_nodes(node_t *node1,
+									node_t *node2,
+									char *from_if_name,
+									char *to_if_name,
+									unsigned int cost);
+
 
 static inline node_t* get_nbr_node(interface_t *interface)
 {
