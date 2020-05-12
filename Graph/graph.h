@@ -7,7 +7,7 @@
 
 #ifndef GRAPH_H_
 #define GRAPH_H_
-#include "gluedthread/glthread.h"
+#include "glueddll/glthread.h"
 
 #define IF_NAME_SIZE 16
 #define NODE_NAME_SIZE 16
