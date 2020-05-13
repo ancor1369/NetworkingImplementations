@@ -44,7 +44,7 @@ void ddlPriorityInsert(gddl_t *baseGddl,
     ((glthreadptr)->right == 0 && (glthreadptr)->left == 0)
 
 #define GLTHREAD_TO_STRUCT(fn_name, structure_name, field_name)                        \
-    static inline structure_name * fn_name(glthread_t *glthreadptr){                   \
+    static inline structure_name * fn_name(gddl_t *glthreadptr){                   \
         return (structure_name *)((char *)(glthreadptr) - (char *)&(((structure_name *)0)->field_name)); \
     }
 
@@ -53,18 +53,20 @@ void ddlPriorityInsert(gddl_t *baseGddl,
 
 #define BASE(glthreadptr)   ((glthreadptr)->right)
 
-#define ITERATE_GLTHREAD_BEGIN(glthreadptrstart, glthreadptr)                                      \
-{                                                                                                  \
-    glthread_t *_glthread_ptr = NULL;                                                              \
-    glthreadptr = BASE(glthreadptrstart);                                                          \
-    for(; glthreadptr!= NULL; glthreadptr = _glthread_ptr){                                        \
+//This macro will go over all the gddl list and will return a pointer
+//every time it is sorrounded
+
+#define ITERATE_GDDL_BEGIN(glthreadptrstart, glthreadptr)                                       \
+{                                                                                               \
+    gddl_t *_glthread_ptr = NULL;                                                               \
+    glthreadptr = BASE(glthreadptrstart);                                                       \
+    for(; glthreadptr!= NULL; glthreadptr = _glthread_ptr){                                     \
         _glthread_ptr = (glthreadptr)->right;
 
-#define ITERATE_GLTHREAD_END(glthreadptrstart, glthreadptr)                                        \
-        }}
+#define ITERATE_GDDL_END(glthreadptrstart, glthreadptr)                                        \
+}}
 
 #define GLTHREAD_GET_USER_DATA_FROM_OFFSET(glthreadptr, offset)  \
     (void *)((char *)(glthreadptr) - offset)
-
 
 #endif /* GDDL_GDDL_H_ */

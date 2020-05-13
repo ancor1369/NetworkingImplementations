@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../graph.c \
+../main.c \
 ../topologies.c 
 
 OBJS += \
 ./graph.o \
+./main.o \
 ./topologies.o 
 
 C_DEPS += \
 ./graph.d \
+./main.d \
 ./topologies.d 
 
 

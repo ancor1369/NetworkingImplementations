@@ -17,8 +17,7 @@ graph_t *create_new_graph(char *topology_name)
 	graph_t *graph = calloc(1, sizeof(graph_t));
 	strncpy(graph->topology_name, topology_name, 32);
 	graph->topology_name[32] = '\0';
-
-	init_glthread(&graph->node_list);
+	ddlInit(&graph->node_list);
 	return graph;
 }
 
@@ -28,8 +27,76 @@ node_t *create_graph_node(graph_t *graph, char *node_name)
 	node_t *node = calloc(1,sizeof(node_t));
 	strncpy(node->node_name,node_name, NODE_NAME_SIZE);
 	node->node_name[NODE_NAME_SIZE] = '\0';
-
-	init_glthread(&node->graph_glue);
-	glthread_add_next(&graph->node_list,&node->graph_glue);
+	ddlInit(&node->graph_glue);
+	ddlAddNext(&graph->node_list,&node->graph_glue);
 	return node;
+}
+
+void insert_link_between_two_nodes(node_t *node1,node_t *node2,
+									char *from_if_name, char *to_if_name,unsigned int cost)
+{
+	//Create a link in memory
+	link_t *link = calloc(1,sizeof(link_t));
+	//Set the names of the link
+    strncpy(link->intf1.if_name, from_if_name, IF_NAME_SIZE);
+    link->intf1.if_name[IF_NAME_SIZE] = '\0';
+    strncpy(link->intf2.if_name, to_if_name, IF_NAME_SIZE);
+    link->intf2.if_name[IF_NAME_SIZE] = '\0';
+
+    //set backpointers to link
+    link->intf1.link = link;
+    link->intf2.link = link;
+
+    link->intf1.att_node = node1;
+    link->intf2.att_node = node2;
+    link->cost = cost;
+
+    int emptyInitSlot;
+
+    emptyInitSlot = get_node_intf_available_slot(node1);
+    node1->intf[emptyInitSlot] = &link->intf1;
+
+    emptyInitSlot = get_node_intf_available_slot(node2);
+    node2->intf[emptyInitSlot] = &link->intf2;
+}
+
+
+//Display information routines!
+void dumpGraph(graph_t *graph)
+{
+	gddl_t *current;
+	node_t *node;
+	//pirnt the name of the graph
+	printf("Topology Name = %s \n", graph->topology_name);
+
+	ITERATE_GDDL_BEGIN(&graph->node_list, current){
+		node = graphGlueToNode(current);
+		dumpNode(node);
+	}ITERATE_GDDL_END(&graph->node_list, current);
+
+
+
+	return;
+}
+void dumpNode(node_t *node)
+{
+	interface_t *intf;
+	//print the node name
+	printf(node->node_name);
+	for(int i=0;i<MAX_INTF_PER_NODE;i++)
+	{
+		intf = node->intf[i];
+		if(!intf) break;
+		dumpInterface(node->intf[i]);
+	}
+	return;
+}
+void dumpInterface(interface_t *interface)
+{
+   link_t *link=interface->link;
+   node_t *nbrNode = getNbrNode(interface);
+   //print the name of the interface
+   printf("Local Node : %s, Interface Name = %s, Nbr Node %s, Cost = %u\n",
+		   interface->att_node->node_name,interface->if_name, nbrNode->node_name, link->cost);
+   return;
 }

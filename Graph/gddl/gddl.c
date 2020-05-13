@@ -54,27 +54,65 @@ void ddlAddBefore(gddl_t *baseGddl, gddl_t *newGddl)
 	temp->left = newGddl;
 }
 
-//Remove a ggdl from the list
-void ddlRemove(gddl_t *toRemove)
-{
-
-}
-
 //Add a gddl at the end of the gdll
 void ddlAddLast(gddl_t *baseGddl, gddl_t *newGddl)
 {
+	gddl_t *gddlptr = NULL, *prevgddlptr = NULL;
+
+	ITERATE_GDDL_BEGIN(baseGddl, gddlptr){
+		prevgddlptr = gddlptr;
+	}ITERATE_GDDL_END(baseGddl, gddlptr);
+
+	if(prevgddlptr)
+		ddlAddNext(prevgddlptr, newGddl);
+	else
+		ddlAddNext(baseGddl, newGddl);
 
 }
 
+//Remove a ggdl from the list
+void ddlRemove(gddl_t *toRemove)
+{
+	if(!toRemove->left)
+	{
+		if(toRemove->right)
+		{
+			toRemove->right->left = NULL;
+			toRemove->right = 0;
+			return;
+		}
+		return;
+	}
+	if(!toRemove->right)
+	{
+		toRemove->left->right = NULL;
+		toRemove->left = NULL;
+		return;
+	}
+	toRemove->left->right = toRemove->right;
+	toRemove->right->left = toRemove->left;
+	toRemove->left = 0;
+	toRemove->right = 0;
+}
 
 void ddlDeleteList(gddl_t *baseGddl)
 {
+	gddl_t *gddlptr = NULL;
+
+	ITERATE_GDDL_BEGIN(baseGddl, gddlptr){
+		ddlRemove(gddlptr);
+	}ITERATE_GDDL_END(baseGddl, gddlptr);
 
 }
 
 unsigned int ddlGetListCount (gddl_t *baseGddl)
 {
-
+	unsigned int i=0;
+	gddl_t *gddlptr = NULL;
+	ITERATE_GDDL_BEGIN(baseGddl, gddlptr){
+		i++;
+	}ITERATE_GDDL_END(baseGddl, gddlptr);
+	return i;
 }
 
 void ddlPriorityInsert(gddl_t *baseGddl,
