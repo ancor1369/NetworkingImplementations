@@ -100,3 +100,41 @@ void dumpInterface(interface_t *interface)
 		   interface->att_node->node_name,interface->if_name, nbrNode->node_name, link->cost);
    return;
 }
+
+//return a pointer to the local interface of a node.
+static inline interface_t *getNodeByName(node_t * node, char *ifName)
+{
+	unsigned int i = 0;
+	for(;i<MAX_INTF_PER_NODE;i++)
+	{
+		//Review that the interface exists
+		if(!node->intf[i]) return NULL;
+		//Verify the name of the i-th interface and return the one
+		//that matches the interface name
+		if(strncmp(node->intf[i]->if_name==ifName)==0)
+		{
+			return node->intf[i];
+		}
+	}
+	// If the code reaches this pint, means that the
+	// interface name does not exist in the current node
+	return NULL;
+}
+
+
+//return a node pointer to the node when searched by name
+static inline node_t * getNodeByNodeName(graph_t * topo, char * nodeName)
+{
+	node_t *temp = NULL;
+	gddl_t *nodeTemp = NULL;
+	gddl_t *baseNode = &topo->node_list;
+	ITERATE_GDDL_BEGIN(baseNode,nodeTemp){
+		temp = graphGlueToNode(nodeTemp);
+		if(strncmp(temp->node_name == nodeName)==0)
+		{
+			return temp;
+		}
+	}ITERATE_GDDL_END(topo->node_list, tempNode->graph_glue);
+}
+
+

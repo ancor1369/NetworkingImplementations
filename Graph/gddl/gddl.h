@@ -56,14 +56,14 @@ void ddlPriorityInsert(gddl_t *baseGddl,
 //This macro will go over all the gddl list and will return a pointer
 //every time it is sorrounded
 
-#define ITERATE_GDDL_BEGIN(glthreadptrstart, glthreadptr)                                       \
-{                                                                                               \
-    gddl_t *_glthread_ptr = NULL;                                                               \
-    glthreadptr = BASE(glthreadptrstart);                                                       \
-    for(; glthreadptr!= NULL; glthreadptr = _glthread_ptr){                                     \
-        _glthread_ptr = (glthreadptr)->right;
+#define ITERATE_GDDL_BEGIN(gddlstart, gddlptr)                                       \
+{                                                                                    \
+    gddl_t *_glthread_ptr = NULL;                                                    \
+    gddlptr = BASE(gddlstart);                                                       \
+    for(; gddlptr!= NULL; gddlptr = _glthread_ptr){                                  \
+        _glthread_ptr = (gddlptr)->right;
 
-#define ITERATE_GDDL_END(glthreadptrstart, glthreadptr)                                        \
+#define ITERATE_GDDL_END(gddlstart, glthreadptr)                                        \
 }}
 
 #define GLTHREAD_GET_USER_DATA_FROM_OFFSET(glthreadptr, offset)  \

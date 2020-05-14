@@ -19,7 +19,6 @@ typedef struct node_ node_t;
 typedef struct link_ link_t;
 //Review appendix D
 
-
 typedef struct interface_ {
 
 	char if_name[IF_NAME_SIZE];
@@ -83,6 +82,13 @@ static inline int get_node_intf_available_slot(node_t *node){
     }
     return -1;
 }
+
+//return a pointer to the local interface of a node.
+static inline interface_t *getNodeByName(node_t * node, char *ifName);
+
+
+//retur a node pointer by name
+static inline node_t * getNodeByNodeName(graph_t * topo, char * nodeName);
 
 
 void dumpGraph(graph_t *graph);
