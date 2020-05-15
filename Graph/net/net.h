@@ -12,8 +12,14 @@
 #ifndef NET_NET_H_
 #define NET_NET_H_
 
-#include "utils.h"
+#include "../utils.h"
 #include <memory.h>
+
+
+/* Device IDS */
+#define L3_ROUTER   (1 << 0)
+#define L2_SWITCH   (1 << 1)
+#define HUB         (1 << 2)
 
 typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
@@ -44,17 +50,13 @@ static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
 
 
 typedef struct intfNwkProps_{
-
 	//L2 propoerties
 	macAddr_t macAddr;		//Mac addresses are supposed to be burned in NIC
-
 	//L3 properties
 	//Set to true if ip address is configured
 	bool_t isIsIPAddrConfig;
-
 	ipAddr_t ipAddr;
 	char mask;
-
 }intfNwkProps_t;
 
 static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
@@ -64,8 +66,8 @@ static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
 void interfaceAssignMacAddress(interface_t *interface);
 
 //Some macros to get fast information
-#define IF_MAC(intfPtr) ((intfPtr)->intfNwkProps.macAddr.mac)
-#define IF_IP(intfPtr) ((infPtr)->intfNwkProps.ipAddr.ipAddr)
+//#define IF_MAC(intfPtr) ((intfPtr)->infNwkProps.macAddr.mac)
+//#define IF_IP(intfPtr) ((intfPtr)->infNwkProps.ipAddr.ipAddr)
 
 #define NODE_LO_ADDR(node_ptr) (node_ptr->nodeNwkProp.lbAddr.ipAddr)
 
@@ -76,7 +78,7 @@ bool_t nodeSetIntfIpAddr(node_t * node, char *localIf, char *ipAddr, char mask);
 bool_t nodeUnsetIntfIpAddr(node_t *node, char *localIf);
 
 
-///Dumpoing ufnctions to get information about the setting
+///Dumping functions to get information about the setting
 void dumpNwkGraph(graph_t *graph);
 void dumpNodeNwkProps(node_t *node);
 void dumpIntfProps(interface_t *interface);

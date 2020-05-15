@@ -16,6 +16,10 @@
 #define NODE_NAME_SIZE 16
 #define MAX_INTF_PER_NODE 10
 
+//Macros to make fast operations over the data structure interface
+#define IF_MAC(intfPtr) ((intfPtr)->infNwkProps.macAddr.mac)
+#define IF_IP(intfPtr) ((intfPtr)->infNwkProps.ipAddr.ipAddr)
+
 //forward declaration
 typedef struct node_ node_t;
 typedef struct link_ link_t;
@@ -26,6 +30,8 @@ typedef struct interface_ {
 	char if_name[IF_NAME_SIZE];
 	struct node_ *att_node;
 	struct link_ *link;
+	//Assigning network properties to the interface type
+	intfNwkProps_t infNwkProps;
 
 }interface_t;
 
@@ -39,6 +45,8 @@ struct node_{
 	char node_name[NODE_NAME_SIZE];
 	interface_t *intf[MAX_INTF_PER_NODE];
 	gddl_t graph_glue;
+	//Assigning node network properties to this type
+	nodeNwkProp_t nodeNwkProp;
 };
 
 GLTHREAD_TO_STRUCT(graphGlueToNode, node_t, graph_glue);

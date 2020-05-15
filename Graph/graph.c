@@ -102,7 +102,7 @@ void dumpInterface(interface_t *interface)
 }
 
 //return a pointer to the local interface of a node.
-static inline interface_t *getNodeByName(node_t * node, char *ifName)
+static inline interface_t *getNodeIntfByName(node_t * node, char *ifName)
 {
 	unsigned int i = 0;
 	for(;i<MAX_INTF_PER_NODE;i++)
@@ -111,7 +111,7 @@ static inline interface_t *getNodeByName(node_t * node, char *ifName)
 		if(!node->intf[i]) return NULL;
 		//Verify the name of the i-th interface and return the one
 		//that matches the interface name
-		if(strncmp(node->intf[i]->if_name==ifName)==0)
+		if(strncmp(node->intf[i]->if_name,ifName,IF_NAME_SIZE)==0)
 		{
 			return node->intf[i];
 		}
@@ -130,7 +130,7 @@ static inline node_t * getNodeByNodeName(graph_t * topo, char * nodeName)
 	gddl_t *baseNode = &topo->node_list;
 	ITERATE_GDDL_BEGIN(baseNode,nodeTemp){
 		temp = graphGlueToNode(nodeTemp);
-		if(strncmp(temp->node_name == nodeName)==0)
+		if(strncmp(temp->node_name, nodeName,IF_NAME_SIZE)==0)
 		{
 			return temp;
 		}
