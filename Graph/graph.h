@@ -9,6 +9,8 @@
 #define GRAPH_H_
 #include <assert.h>
 #include "gddl/gddl.h"
+#include "net/net.h"
+
 
 #define IF_NAME_SIZE 16
 #define NODE_NAME_SIZE 16
