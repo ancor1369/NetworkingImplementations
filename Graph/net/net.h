@@ -57,14 +57,14 @@ static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
 {
 	nodeNwkProp->flags = 0;
 	nodeNwkProp->isLbAddrConfig = FALSE;
-	memset(nodeNwkProp->lbAddr, 0,16);
+	memset(nodeNwkProp->lbAddr.ipAddr,0,16);
 }
 
 static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
 {
-	memset(intNwkProp->ipAddr,0, 16);
+	memset(intNwkProp->ipAddr.ipAddr,0,sizeof(intNwkProp->ipAddr.ipAddr));
 	intNwkProp->isIsIPAddrConfig = FALSE;
-	memset(intNwkProp->macAddr, 0,48);
+	memset(intNwkProp->macAddr.mac,0,sizeof(intNwkProp->macAddr.mac));
 	intNwkProp->mask = 0;;
 }
 

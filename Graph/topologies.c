@@ -42,6 +42,20 @@ graph_t * build_first_topo()
 	insert_link_between_two_nodes(R1_re, R2_re, "eth0/2","eth0/3",1);
 	insert_link_between_two_nodes(R0_re, R2_re, "eth0/4","eth0/5",1);
 
+	nodeSetLoopBack(R0_re, "122.1.1.0");
+	nodeSetIntfIpAddr(R0_re, "eth0/4", "40.1.1.1",24);
+	nodeSetIntfIpAddr(R0_re, "eth0/0", "20.1.1.1",24);
+
+	nodeSetLoopBack(R1_re, "122.1.1.1");
+	nodeSetIntfIpAddr(R1_re, "eth0/1", "20.1.1.2",24);
+	nodeSetIntfIpAddr(R1_re, "eth0/2", "30.1.1.1",24);
+
+	nodeSetLoopBack(R2_re, "122.1.1.2");
+	nodeSetIntfIpAddr(R2_re, "eth0/3", "30.1.1.2",24);
+	nodeSetIntfIpAddr(R2_re, "eth0/5", "40.1.1.2",24);
+
+
+
 	return topo;
 
 }

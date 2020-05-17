@@ -30,11 +30,11 @@ bool_t nodeSetDeviceType(node_t *node, unsigned int F)
 bool_t nodeSetLoopBack(node_t *node, char *ipAddr)
 {
 	assert(ipAddr);
-	if(IS_BIT_SET(node->nodeNwkProp.flags, HUB))
-		assert(0); //This means that the device is a HUB, so it does not have any IP address
-
-	if(!IS_BIT_SET(node->nodeNwkProp.flags,L3_ROUTER))
-		assert(0); // This means that the L3 Routing capacity is not enabled yet
+//	if(IS_BIT_SET(node->nodeNwkProp.flags, HUB))
+//		assert(0); //This means that the device is a HUB, so it does not have any IP address
+//
+//	if(!IS_BIT_SET(node->nodeNwkProp.flags,L3_ROUTER))
+//		assert(0); // This means that the L3 Routing capacity is not enabled yet
 
 	node->nodeNwkProp.isLbAddrConfig = TRUE;
     //strncpy(node->nodeNwkProp.lbAddr.ipAddr, ipAddr, 16);
@@ -101,7 +101,7 @@ void dumpNwkGraph(graph_t *graph)
 		node = graphGlueToNode(curr);
 		dumpNodeNwkProps(node);
 		for(i = 0; i < MAX_INTF_PER_NODE; i++){
-			interface = node[i].intf;
+			interface = node->intf[i];
 			if(!interface) break;
 			dumpIntfProps(interface);
 		}
