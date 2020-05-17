@@ -45,25 +45,68 @@ bool_t nodeSetLoopBack(node_t *node, char *ipAddr)
 
 bool_t nodeSetIntfIpAddr(node_t * node, char *localIf, char *ipAddr, char mask)
 {
-
+	interface_t *intrface = getNodeIfByName(node, localIf);
+	strncpy(IF_IP(intrface),ipAddr, 16);
+	IF_IP(intrface)[16] = '\0';
+	intrface->infNwkProps.mask = mask;
+	intrface->infNwkProps.isIsIPAddrConfig = TRUE;
+	return TRUE;
 }
 
 bool_t nodeUnsetIntfIpAddr(node_t *node, char *localIf)
 {
-
+	interface_t *interface = getNodeIfByName(node, localIf);
+	memset(IF_IP(interface),0, 16);
+	interface->infNwkProps.isIsIPAddrConfig = FALSE;
+	memset(interface->infNwkProps.mask, 0,48);
+	return TRUE;
 }
 
-
-///Dumpoing ufnctions to get information about the setting
-void dumpNwkGraph(graph_t *graph)
-{
-
-}
 void dumpNodeNwkProps(node_t *node)
 {
-
+	printf("\nNode Name = %s\n", node->node_name);
+	printf("\t node flags: %u", node->nodeNwkProp.flags);
+	if(node->nodeNwkProp.isLbAddrConfig){
+		printf("\t lo addr: %s/32\n", NODE_LO_ADDR(node));
+	}
 }
+
 void dumpIntfProps(interface_t *interface)
 {
+	dumpInterface(interface);
+	if(interface->infNwkProps.isIsIPAddrConfig){
+		printf("\t IP Addr = %s\n", IF_IP(interface), interface->infNwkProps.mask);
+	}
+	else{
+		printf("\t IP Addr = %s/%u", "Nil", 0);
+	}
+	printf("\t MAC : %u:%u:%u:%u:%u:%u:\n",
+			IF_MAC(interface)[0], IF_MAC(interface)[1],
+			IF_MAC(interface)[2], IF_MAC(interface)[3],
+			IF_MAC(interface)[4], IF_MAC(interface)[5]);
+}
+
+///Dumping functions to get information about the setting
+void dumpNwkGraph(graph_t *graph)
+{
+	node_t *node;
+	gddl_t *curr;
+	interface_t *interface;
+	unsigned int i;
+
+	printf("Topology Name = %s\n", graph->topology_name);
+
+
+	ITERATE_GDDL_BEGIN(&graph->node_list, curr){
+		node = graphGlueToNode(curr);
+		dumpNodeNwkProps(node);
+		for(i = 0; i < MAX_INTF_PER_NODE; i++){
+			interface = node[i].intf;
+			if(!interface) break;
+			dumpIntfProps(interface);
+		}
+
+	}ITERATE_GDDL_END(&graph->node_list, curr);
 
 }
+

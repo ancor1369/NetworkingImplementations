@@ -63,7 +63,7 @@ void ddlPriorityInsert(gddl_t *baseGddl,
     for(; gddlptr!= NULL; gddlptr = _glthread_ptr){                                  \
         _glthread_ptr = (gddlptr)->right;
 
-#define ITERATE_GDDL_END(gddlstart, glthreadptr)                                        \
+#define ITERATE_GDDL_END(gddlstart, gddlptr)                                        \
 }}
 
 #define GLTHREAD_GET_USER_DATA_FROM_OFFSET(glthreadptr, offset)  \

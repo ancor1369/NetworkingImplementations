@@ -42,12 +42,6 @@ typedef struct nodeNwkProp_{
 	ipAddr_t lbAddr;
 }nodeNwkProp_t;
 
-static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
-{
-	//TODO:
-}
-
-
 
 typedef struct intfNwkProps_{
 	//L2 propoerties
@@ -59,17 +53,34 @@ typedef struct intfNwkProps_{
 	char mask;
 }intfNwkProps_t;
 
+static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
+{
+	nodeNwkProp->flags = 0;
+	nodeNwkProp->isLbAddrConfig = FALSE;
+	memset(nodeNwkProp->lbAddr, 0,16);
+}
+
 static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
 {
-	//TODO:
+	memset(intNwkProp->ipAddr,0, 16);
+	intNwkProp->isIsIPAddrConfig = FALSE;
+	memset(intNwkProp->macAddr, 0,48);
+	intNwkProp->mask = 0;;
 }
+
+
 void interfaceAssignMacAddress(interface_t *interface);
 
 //Some macros to get fast information
 //#define IF_MAC(intfPtr) ((intfPtr)->infNwkProps.macAddr.mac)
 //#define IF_IP(intfPtr) ((intfPtr)->infNwkProps.ipAddr.ipAddr)
 
-#define NODE_LO_ADDR(node_ptr) (node_ptr->nodeNwkProp.lbAddr.ipAddr)
+#define NODE_LO_ADDR(nodePtr) (nodePtr->nodeNwkProp.lbAddr.ipAddr)
+
+
+#define IS_INTF_L3_MODE(intfPtr) (intfPtr->infNwkProps.isIsIPAddrConfig)
+
+
 
 //APIs to set network properties
 bool_t nodeSetDeviceType(node_t *node, unsigned int F);

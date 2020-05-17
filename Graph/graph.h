@@ -94,7 +94,22 @@ static inline int get_node_intf_available_slot(node_t *node){
 }
 
 //return a pointer to the local interface of a node.
-static inline interface_t *getNodeByName(node_t * node, char *ifName);
+//static inline interface_t *getNodeIfByName(node_t * node, char *ifName);
+static inline interface_t *getNodeIfByName(node_t * node, char *ifName)
+{
+	int i;
+	interface_t *interface;
+
+	for(i=0;i<MAX_INTF_PER_NODE; i++)
+	{
+		interface = node->intf[i];
+		if(strncmp(interface->if_name, ifName, IF_NAME_SIZE) == 0)
+		{
+			return interface;
+		}
+	}
+	return NULL;
+}
 
 
 //retur a node pointer by name

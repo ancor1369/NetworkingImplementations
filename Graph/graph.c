@@ -29,6 +29,15 @@ node_t *create_graph_node(graph_t *graph, char *node_name)
 	node->node_name[NODE_NAME_SIZE] = '\0';
 	ddlInit(&node->graph_glue);
 	ddlAddNext(&graph->node_list,&node->graph_glue);
+
+	initNodeNwkProp(node->nodeNwkProp);
+	int i;
+	for(i=0;i<MAX_INTF_PER_NODE;i++)
+	{
+		initIntfNwkProp(node->intf[i]->infNwkProps);
+		interfaceAssignMacAddress(node->intf[i]);
+	}
+
 	return node;
 }
 
@@ -135,6 +144,8 @@ static inline node_t * getNodeByNodeName(graph_t * topo, char * nodeName)
 			return temp;
 		}
 	}ITERATE_GDDL_END(topo->node_list, tempNode->graph_glue);
+	return NULL;
 }
+
 
 
