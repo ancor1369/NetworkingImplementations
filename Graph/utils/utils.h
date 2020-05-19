@@ -26,4 +26,6 @@ typedef enum{
  */
 void applyMask(char *prefix, char mask, char *strPrefix);
 
+void layer2FillWithBroadcast(char *macArray);
+
 #endif /* UTILS_H_ */

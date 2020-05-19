@@ -109,6 +109,7 @@ void dumpNwkGraph(graph_t *graph)
 			char *intfAddr = NULL;
 			intfAddr = IF_IP(interface);
 			applyMask(intfAddr, interface->infNwkProps.mask,result);
+			printf("result %s\n", result);
 		}
 
 	}ITERATE_GDDL_END(&graph->node_list, curr);
