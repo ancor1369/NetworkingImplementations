@@ -8,6 +8,17 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+//#define IS_MAC_BROADCAST_ADDR(mac) \
+//	int i;							\
+//   for(i=0;i<6;i++)     			\
+//   if(mac[i]!=0xFF){ \
+//	   return FALSE; } \
+//	   }  if(i==5) return true;\
+
+#define IS_MAC_VROADCAST_ADDR(ma) \
+	(mac[0]==0xFF && mac[1] == 0xFF && mac[2]==0xFF && \
+	mac[3] == 0xFF  && mac[4]==0xFF && mac[5] == 0xFF )
+
 typedef enum{
 	FALSE,
 	TRUE
@@ -27,5 +38,7 @@ typedef enum{
 void applyMask(char *prefix, char mask, char *strPrefix);
 
 void layer2FillWithBroadcast(char *macArray);
+
+void nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr);
 
 #endif /* UTILS_H_ */
