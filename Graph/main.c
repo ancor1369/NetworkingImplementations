@@ -16,5 +16,7 @@ int main(int argc, char **argv)
 	graph_t *topo = build_first_topo();
 	//dumpGraph(topo);
 	dumpNwkGraph(topo);
+
+
 	return 0;
 }

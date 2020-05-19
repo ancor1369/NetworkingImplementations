@@ -16,4 +16,5 @@ SUBDIRS := \
 gddl \
 . \
 net \
+utils \
 

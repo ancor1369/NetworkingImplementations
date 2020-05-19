@@ -12,7 +12,7 @@
 #ifndef NET_NET_H_
 #define NET_NET_H_
 
-#include "../utils.h"
+#include "../utils/utils.h"
 #include <memory.h>
 
 
@@ -25,8 +25,10 @@ typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
 typedef struct node_ node_t;
 
+//This can represent even an IPv6 Ip address which is 16 bytes long
+//It requires to be unsigned because char is composed of 8 bits each from 0 255.
 typedef struct ipAddr{
-	char ipAddr[16];
+	unsigned char ipAddr[16];
 }ipAddr_t;
 
 typedef struct macAddr{

@@ -19,4 +19,11 @@ typedef enum{
 #define UNISET_BIT(n,pos) (n = n & ((1 << pos))^0xFFFFFFFF)
 #define SET_BIT(n, pos) (n= n | 1 << pos)
 
+/*
+ * prefix: pointer to an string representing an IP address
+ * mask is any value 0-32
+ * strPrefix: pointer to a 16 byte char array, the output fills the array when finishing
+ */
+void applyMask(char *prefix, char mask, char *strPrefix);
+
 #endif /* UTILS_H_ */

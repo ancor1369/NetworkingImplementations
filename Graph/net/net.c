@@ -7,7 +7,7 @@
 
 #include "net.h"
 #include <memory.h>
-#include "../utils.h"
+#include "../utils/utils.h"
 #include <stdio.h>
 #include "../graph.h"
 
@@ -104,6 +104,11 @@ void dumpNwkGraph(graph_t *graph)
 			interface = node->intf[i];
 			if(!interface) break;
 			dumpIntfProps(interface);
+
+			char result[16];
+			char *intfAddr = NULL;
+			intfAddr = IF_IP(interface);
+			applyMask(intfAddr, interface->infNwkProps.mask,result);
 		}
 
 	}ITERATE_GDDL_END(&graph->node_list, curr);
