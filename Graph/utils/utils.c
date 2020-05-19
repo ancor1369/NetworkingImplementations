@@ -54,7 +54,11 @@ void applyMask(char *prefix, char mask, char *strPrefix)
 
 void layer2FillWithBroadcast(char *macArray)
 {
-	char *broadcast = "FF:FF:FF:FF:FF:FF";
-	strncpy(macArray,broadcast, sizeof(broadcast));
-	macArray[6] = '\0';
+//	char *broadcast = "FF:FF:FF:FF:FF:FF";
+//	strncpy(macArray,broadcast, sizeof(broadcast));
+	int i;
+	for(i = 0;i<6;i++)
+	{
+		macArray[i] = 0XFF;
+	}
 }
