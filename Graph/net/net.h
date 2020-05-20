@@ -99,4 +99,8 @@ void dumpIntfProps(interface_t *interface);
 
 interface_t * nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr);
 
+unsigned int convertIpFromStrToInt(char *ipAddr);
+
+void convertIpFromIntToStr(unsigned int ipAddr, char *ipAddrOut);
+
 #endif /* NET_NET_H_ */

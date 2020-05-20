@@ -10,6 +10,7 @@
 #include "../utils/utils.h"
 #include <stdio.h>
 #include "../graph.h"
+#include <arpa/inet.h>
 
 
 void interfaceAssignMacAddress(interface_t *interface)
@@ -151,5 +152,15 @@ interface_t * nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr)
 	//If the algorithm reaches this section, it means that non of the interfaces
 	//Met the requirement to be selected as the needed route
 	return NULL;
+}
+
+unsigned int convertIpFromStrToInt(char *ipAddr)
+{
+	return inet_addr(ipAddr);
+}
+
+void convertIpFromIntToStr(unsigned int ipAddr, char *ipAddrOut)
+{
+	inet_ntop(AF_INET, &ipAddr, ipAddrOut, 16);
 }
 
