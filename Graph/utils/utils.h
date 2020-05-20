@@ -39,6 +39,6 @@ void applyMask(char *prefix, char mask, char *strPrefix);
 
 void layer2FillWithBroadcast(char *macArray);
 
-void nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr);
+
 
 #endif /* UTILS_H_ */

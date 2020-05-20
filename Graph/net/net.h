@@ -96,4 +96,7 @@ void dumpNwkGraph(graph_t *graph);
 void dumpNodeNwkProps(node_t *node);
 void dumpIntfProps(interface_t *interface);
 
+
+interface_t * nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr);
+
 #endif /* NET_NET_H_ */

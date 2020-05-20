@@ -116,3 +116,40 @@ void dumpNwkGraph(graph_t *graph)
 
 }
 
+
+//  char result[16];
+//	char *intfAddr = NULL;
+//	intfAddr = IF_IP(interface);
+//	applyMask(intfAddr, interface->infNwkProps.mask,result);
+
+interface_t * nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr)
+{
+	int i;
+	char *tempAddIntf = NULL;
+	char *tempAddPro = NULL;
+	char resultInterface[16];
+	char resultProvided[16];
+	uint32_t binaryInterface;
+	uint32_t binaryProvided;
+	for(i=0;i<sizeof(node->intf); i++)
+	{
+		//Obtain the IP address of each interface and then get the
+		//network after getting the mask
+		tempAddIntf = node->intf[i]->infNwkProps.ipAddr.ipAddr;
+		applyMask(tempAddIntf, node->intf[i]->infNwkProps.mask, resultInterface);
+		//Get the network of the provided ipAddress
+		applyMask(tempAddPro, node->intf[i]->infNwkProps.mask, resultProvided);
+		//Compare the two networks and decide what to do
+		//TODO: Compare the two IP addresses by using the arpa set of libraries so that it is easy to make sure we are talking about the same
+		binaryInterface = inet_addr(tempAddIntf);
+		binaryProvided = inet_addr(ipAddr);
+		if(binaryInterface == binaryProvided)
+		{
+			return node->intf[i];
+		}
+	}
+	//If the algorithm reaches this section, it means that non of the interfaces
+	//Met the requirement to be selected as the needed route
+	return NULL;
+}
+
