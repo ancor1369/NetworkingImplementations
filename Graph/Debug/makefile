@@ -11,6 +11,7 @@ RM := rm -rf
 -include utils/subdir.mk
 -include net/subdir.mk
 -include gddl/subdir.mk
+-include communication/subdir.mk
 -include CommandParser/subdir.mk
 -include subdir.mk
 -include objects.mk

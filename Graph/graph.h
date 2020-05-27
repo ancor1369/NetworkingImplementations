@@ -45,6 +45,8 @@ struct node_{
 	char node_name[NODE_NAME_SIZE];
 	interface_t *intf[MAX_INTF_PER_NODE];
 	gddl_t graph_glue;
+	unsigned int udpPortNumber; //This starts the integration of networking capabilities for for the nodes
+	int udpSocketFileDescriptor; //This is important informtiaon to reamin the information about the file descriptor used by the operative system
 	//Assigning node network properties to this type
 	nodeNwkProp_t nodeNwkProp;
 };

@@ -6,6 +6,7 @@
  */
 
 #include "graph.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -21,13 +22,19 @@ graph_t *create_new_graph(char *topology_name)
 	return graph;
 }
 
-
+/*
+ * Creates and initializes all the information of a new node.
+ *
+ * It is necessary to assign a unique udp port number and
+ * a file descriptor for the UDP socket created for this node
+ */
 node_t *create_graph_node(graph_t *graph, char *node_name)
 {
 	node_t *node = calloc(1,sizeof(node_t));
 	strncpy(node->node_name,node_name, NODE_NAME_SIZE);
 	node->node_name[NODE_NAME_SIZE] = '\0';
 
+	initUdpSocket(node);
 	initNodeNwkProp(&node->nodeNwkProp);
 
 	ddlInit(&node->graph_glue);
