@@ -11,6 +11,7 @@ RM := rm -rf
 -include utils/subdir.mk
 -include net/subdir.mk
 -include gddl/subdir.mk
+-include CommandParser/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -31,7 +32,7 @@ all: Graph
 Graph: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc  -o "Graph" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/home/andres/Documents/EMBT/Networking/NetworkingImplementations/Graph/CommandParser -o "Graph" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -6,16 +6,19 @@
 C_SRCS += \
 ../graph.c \
 ../main.c \
+../nwcli.c \
 ../topologies.c 
 
 OBJS += \
 ./graph.o \
 ./main.o \
+./nwcli.o \
 ./topologies.o 
 
 C_DEPS += \
 ./graph.d \
 ./main.d \
+./nwcli.d \
 ./topologies.d 
 
 
