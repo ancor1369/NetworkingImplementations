@@ -22,11 +22,28 @@ static unsigned int udpPortNumber = 40000;
 
 //Static makes the members to be private
 
+//Permanent set of memory available for use
 static char recvBuffer[MAX_PACKET_BUFFER_SIZE];
+static char sendBuffer[MAX_PACKET_BUFFER_SIZE];
 
 static void _pkt_receive(node_t *receiving_node, char *pkt_with_aux_data, unsigned int pkt_size)
 {
 
+}
+
+static int _send_pkt_out(int sockFD,char *pktData, unsigned int pktSize, unsigned int dstUdtPortNo)
+{
+	int rc;
+	struct sockaddr_in destAddr;
+
+	struct hostent *host = (struct hostent *)gethostbyname("127.0.0.1");
+	destAddr.sin_family = AF_INET;
+	destAddr.sin_port = dstUdtPortNo;
+	destAddr.sin_addr = *((struct in_addr *)host->h_addr);
+
+	rc = sendto(sockFD, pktData, pktSize, 0, (struct sockaddr *)&destAddr, sizeof(struct sockaddr));
+
+	return rc;
 }
 
 static unsigned int getNextUdpPortNumber()
@@ -121,6 +138,46 @@ void networkStartPktReceiverThread(graph_t *topo)
 	pthread_create(&receivedPacketThread, &attr, networkStartPacketReceiverThread,(void *)topo);
 }
 
+
+int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
+{
+	int rc = 0;
+
+	node_t *sending_node = interface->att_node;
+	node_t *nextNode = getNbrNode(interface);
+
+	if(!nextNode)
+		return -1;
+
+	unsigned int dstUdtPortNo = nextNode->udpPortNumber;
+
+	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+	if(sock<0)
+	{
+		printf("Error: Sending socket Creation failed, errno = %d", errno);
+		return -1;
+	}
+
+	interface_t *otherInterface = &interface->link->intf1 == interface ? &interface->link->intf2 : &interface->link->intf1;
+
+	memset(sendBuffer, 0, MAX_PACKET_BUFFER_SIZE);
+	//This is a representation of a char pointer to the initial
+	//address of memory where the message is located
+	char *pktWithAuxData = sendBuffer;
+
+	//Cppy the name of the interface in the first section of the buffer
+	strncpy(pktWithAuxData, otherInterface->if_name, IF_NAME_SIZE);
+	pktWithAuxData[IF_NAME_SIZE] = '\0';
+
+	//move the starting point of the buffer by IF_NAME_SIZE and copy the packet content there
+	memcpy(pktWithAuxData + IF_NAME_SIZE, packet, pktSize);
+
+	rc = _send_pkt_out(sock, pktWithAuxData, pktSize + IF_NAME_SIZE, dstUdtPortNo);
+
+	close(sock);
+	return rc;
+}
 
 
 
