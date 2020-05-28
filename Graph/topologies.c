@@ -8,6 +8,8 @@
 
 #include "graph.h"
 
+extern void networkStartPktReceiverThread(graph_t *topo);
+
 graph_t * build_first_topo()
 {
 
@@ -55,6 +57,7 @@ graph_t * build_first_topo()
 	nodeSetIntfIpAddr(R2_re, "eth0/5", "40.1.1.2",24);
 
 
+	networkStartPktReceiverThread(topo);
 
 	return topo;
 
