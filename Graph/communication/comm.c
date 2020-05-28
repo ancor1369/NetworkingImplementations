@@ -26,8 +26,30 @@ static unsigned int udpPortNumber = 40000;
 static char recvBuffer[MAX_PACKET_BUFFER_SIZE];
 static char sendBuffer[MAX_PACKET_BUFFER_SIZE];
 
+
+int pkt_receive(node_t *node, interface_t *interface, char *pkt, unsigned int pktSize)
+{
+	/*
+	 * Entry point into data link layer from physical layer
+	 * Ingress journey of the packet starts from here in TCP/IP stack
+	 */
+
+	printf("msg received = %s, on node = %s, IIF = %s\n", pkt, node->node_name, interface->if_name);
+	return 0;
+}
+
+
+
 static void _pkt_receive(node_t *receiving_node, char *pkt_with_aux_data, unsigned int pkt_size)
 {
+	char *recvIntfName = pkt_with_aux_data;
+	interface_t *recvIntef = getNodeIfByName(receiving_node, receiving_node);
+	if(!recvIntef){
+		printf("Error : pkt received on unknown interface %s on node %s\n",recvIntef->if_name, receiving_node->node_name);
+				return ;
+	}
+
+	pkt_receive(receiving_node, recvIntef, pkt_with_aux_data + IF_NAME_SIZE, pkt_size - IF_NAME_SIZE);
 
 }
 

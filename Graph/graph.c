@@ -142,7 +142,9 @@ static inline interface_t *getNodeIntfByName(node_t * node, char *ifName)
 
 
 //return a node pointer to the node when searched by name
-static inline node_t * getNodeByNodeName(graph_t * topo, char * nodeName)
+//static
+//inline
+node_t * getNodeByNodeName(graph_t * topo, char * nodeName)
 {
 	node_t *temp = NULL;
 	gddl_t *nodeTemp = NULL;

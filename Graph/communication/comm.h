@@ -10,8 +10,12 @@
 
 #define MAX_PACKET_BUFFER_SIZE 2048
 
-//This is a public API function so we declare it in this file
+//Any function declared here is a public function that will be available for other
+//sections of the program to use
+
 int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface);
+
+int pkt_receive(node_t *node, interface_t *interface, char *pkt, unsigned int pktSize);
 
 
 #endif /* COMMUNICATION_COMM_H_ */
