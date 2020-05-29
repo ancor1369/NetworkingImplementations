@@ -5,7 +5,7 @@
  *      Author: andres
  */
 
-#include "../graph.h"
+#include "graph.h"
 #include "comm.h"
 #include <sys/socket.h>
 #include <pthread.h>
@@ -161,6 +161,8 @@ void networkStartPktReceiverThread(graph_t *topo)
 }
 
 
+
+
 int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
 {
 	int rc = 0;
@@ -205,7 +207,26 @@ int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
 
 
 
-
+int sendPktFlood(node_t *node, interface_t *exempted_int, char *pkt, unsigned int pktSize)
+{
+	int i = 0;
+	for(;i<MAX_INTF_PER_NODE;i++)
+	{
+		if(node->intf[i])
+		{
+			if(strncmp(node->intf[i]->if_name, exempted_int->if_name, IF_NAME_SIZE) != 0)
+			{
+				//Send messages
+				sendPktOut(pkt, pktSize, node->intf[i]);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	return 0;
+}
 
 
 

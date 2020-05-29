@@ -63,4 +63,29 @@ graph_t * build_first_topo()
 
 }
 
+graph_t *build_lineal_topo()
+{
+	graph_t *topo = create_new_graph("Lineal Topo");
+
+	node_t *H1 = create_graph_node(topo,"H1");
+	node_t *H2 = create_graph_node(topo,"H2");
+	node_t *H3 = create_graph_node(topo, "H3");
+
+	insert_link_between_two_nodes(H1, H2, "eth0/1", "eth0/2",1);
+	insert_link_between_two_nodes(H2,H3, "eth0/3", "eth0/4",1);
+
+	nodeSetLoopBack(H1, "127.1.1.1");
+	nodeSetLoopBack(H2,"127.1.1.2");
+	nodeSetLoopBack(H3,"127.1.1.3");
+
+
+	nodeSetIntfIpAddr(H1,"eth0/1","10.1.1.1",24);
+	nodeSetIntfIpAddr(H2,"eth0/2","10.1.1.2",24);
+	nodeSetIntfIpAddr(H2,"eth0/3","20.1.1.2",24);
+	nodeSetIntfIpAddr(H3,"eth0/4","20.1.1.1",24);
+
+	networkStartPktReceiverThread(topo);
+
+	return topo;
+}
 

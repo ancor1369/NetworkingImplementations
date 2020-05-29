@@ -13,6 +13,8 @@
 //Any function declared here is a public function that will be available for other
 //sections of the program to use
 
+int sendPktFlood(node_t *node, interface_t *exempted_int, char *pkt, unsigned int pktSize);
+
 int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface);
 
 int pkt_receive(node_t *node, interface_t *interface, char *pkt, unsigned int pktSize);

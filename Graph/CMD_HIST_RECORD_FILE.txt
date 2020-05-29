@@ -3,3 +3,9 @@ show topology
 cls
 show topology
 .
+.
+.
+show topology
+.
+.
+show topo
