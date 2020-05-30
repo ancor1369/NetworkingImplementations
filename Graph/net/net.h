@@ -21,11 +21,6 @@
 #define L2_SWITCH   (1 << 1)
 #define HUB         (1 << 2)
 
-
-#define IS_INTF_L3_MODE(intf_ptr) (intf_ptr->infNwkProps.isIsIPAddrConfig == TRUE)
-
-
-
 typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
 typedef struct node_ node_t;
@@ -37,7 +32,7 @@ typedef struct ipAddr{
 }ipAddr_t;
 
 typedef struct macAddr{
-	char mac[48];
+	char mac[6];
 }macAddr_t;
 
 typedef struct nodeNwkProp_{
@@ -79,15 +74,12 @@ static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
 void interfaceAssignMacAddress(interface_t *interface);
 
 //Some macros to get fast information
-//#define IF_MAC(intfPtr) ((intfPtr)->infNwkProps.macAddr.mac)
-//#define IF_IP(intfPtr) ((intfPtr)->infNwkProps.ipAddr.ipAddr)
+#define IF_MAC(intfPtr) ((intfPtr)->infNwkProps.macAddr.mac)
+#define IF_IP(intfPtr) ((intfPtr)->infNwkProps.ipAddr.ipAddr)
 
 #define NODE_LO_ADDR(nodePtr) (nodePtr->nodeNwkProp.lbAddr.ipAddr)
 
-
-#define IS_INTF_L3_MODE(intfPtr) (intfPtr->infNwkProps.isIsIPAddrConfig)
-
-
+#define IS_INTF_L3_MODE(intfPtr) (intfPtr->infNwkProps.isIsIPAddrConfig == TRUE)
 
 //APIs to set network properties
 bool_t nodeSetDeviceType(node_t *node, unsigned int F);

@@ -5,6 +5,7 @@
  *      Author: andres
  */
 
+#include "Layer2.h"
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size)
 {

@@ -15,7 +15,7 @@
 //	   return FALSE; } \
 //	   }  if(i==5) return true;\
 
-#define IS_MAC_VROADCAST_ADDR(ma) \
+#define IS_MAC_BROADCAST_ADDR(mac) \
 	(mac[0]==0xFF && mac[1] == 0xFF && mac[2]==0xFF && \
 	mac[3] == 0xFF  && mac[4]==0xFF && mac[5] == 0xFF )
 
