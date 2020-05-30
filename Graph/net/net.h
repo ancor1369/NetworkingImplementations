@@ -21,6 +21,11 @@
 #define L2_SWITCH   (1 << 1)
 #define HUB         (1 << 2)
 
+
+#define IS_INTF_L3_MODE(intf_ptr) (intf_ptr->infNwkProps.isIsIPAddrConfig == TRUE)
+
+
+
 typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
 typedef struct node_ node_t;
