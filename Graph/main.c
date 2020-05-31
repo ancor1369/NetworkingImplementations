@@ -28,10 +28,15 @@ int main(int argc, char **argv)
 //
 //	start_shell();
 
+	char *ip_add_str = NULL;
+	ip_add_str = (char*)malloc(16);
 	char *IP = "192.168.0.15\0";
 	unsigned int result = 0;
 	result = ip_addr_p_to_n(IP);
-	printf("This is the result: u%", result);
+	printf("This is the result: %u \n", result);
+	ip_addr_n_to_p(result, ip_add_str);
+	printf("This is the ip again. %s \n", ip_add_str);
+
 
 	return 0;
 }

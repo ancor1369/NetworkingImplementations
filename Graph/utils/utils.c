@@ -14,6 +14,7 @@
 #include <math.h>
 #include <stdio.h>
 
+
 /*
  * prefix: pointer to an string representing an IP address
  * mask is any value 0-32
@@ -118,11 +119,48 @@ unsigned int ip_addr_p_to_n(char *ipAddres)
 		strcpy(temp,"0");
 		passedOffset += offset;
 	}
+	free(temp);
 	return result;
 }
 
 
-
+void ip_addr_n_to_p(unsigned int ip_addr, char *ip_add_str)
+{
+	char hexa[16];
+	char hexaTemp[3];
+	char *result = NULL;
+	char *tempVal = NULL;
+	char *innerVal = NULL;
+	result = (char *)malloc(16);
+	tempVal = (char*)malloc(16);
+	innerVal = (char *)malloc(3);
+	sprintf(hexa,"%X",ip_addr);
+	strcat(tempVal, hexa);
+    int tempInt = 0;
+    char *temporal = NULL;
+    char *point = NULL;
+    point = (char*)malloc(1);
+    strcpy(point, ".");
+    int counter = 0;
+	for(char *i = tempVal; i < (tempVal + 16);i++)
+	{
+		strncpy(result, i,2);
+		//Convert the hexadecimal number into decimal representation strtol
+		tempInt = strtol(result,&temporal, 16);
+		sprintf(hexaTemp, "%d", tempInt);
+		strcpy(innerVal, hexaTemp);
+		strcat(ip_add_str, innerVal);
+		if(counter<3)
+		 strcat(ip_add_str, point);
+		else
+			break;
+		i++;
+		counter++;
+	}
+	free(result);
+	free(tempVal);
+	free(innerVal);
+}
 
 
 

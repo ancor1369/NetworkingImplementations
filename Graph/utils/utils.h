@@ -44,5 +44,7 @@ void layer2FillWithBroadcast(char *macArray);
 
 unsigned int ip_addr_p_to_n(char *ipAddres);
 
+void ip_addr_n_to_p(unsigned int ip_addr, char *ip_add_str);
+
 
 #endif /* UTILS_H_ */
