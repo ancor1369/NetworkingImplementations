@@ -42,6 +42,7 @@ void applyMask(char *prefix, char mask, char *strPrefix);
 
 void layer2FillWithBroadcast(char *macArray);
 
+unsigned int ip_addr_p_to_n(char *ipAddres);
 
 
 #endif /* UTILS_H_ */

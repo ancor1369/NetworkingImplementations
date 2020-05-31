@@ -9,6 +9,8 @@
 #include "CommandParser/libcli.h"
 #include "comm.h"
 
+#include "utils/utils.h"
+
 //Declare a reference tot he mehtod that is implemented in topologies.c
 extern graph_t *build_first_topo();
 extern graph_t *build_lineal_topo();
@@ -20,18 +22,16 @@ graph_t *topo = NULL;
 
 int main(int argc, char **argv)
 {
-	nwInitCLI();
-//	topo = build_first_topo();
-	topo = build_lineal_topo();
-
-	sleep(2);
+//	nwInitCLI();
+////	topo = build_first_topo();
+//	topo = build_lineal_topo();
 //
-//	node_t *snode = getNodeByNodeName(topo, "R0_re");
-//	interface_t *oif = getNodeIfByName(snode, "eth0/0");
-//
-//	char msg[] = "This is a test message to be sent \0";
-//	sendPktOut(msg, strlen(msg), oif);
+//	start_shell();
 
-	start_shell();
+	char *IP = "192.168.0.15\0";
+	unsigned int result = 0;
+	result = ip_addr_p_to_n(IP);
+	printf("This is the result: u%", result);
+
 	return 0;
 }

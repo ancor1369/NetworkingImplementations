@@ -21,11 +21,23 @@
 
 
 #pragma pack (push, 1)
+typedef struct arp_header_{
+	short hwType;
+	short protoType;
+	char hwAddrLen;
+	short opCode;
+	macAddr_t srcMac;
+	unsigned int srcIp;
+	macAddr_t dstMac;
+	unsigned int dstIp;
+}arp_header_t;
+
+
 typedef struct ethernet_header_{
 
 	macAddr_t dstMAC;
 	macAddr_t srcMAC;
-	short type;
+	unsigned short type;
 	char payload[248]; //This is allowed to as big as 1500
 	unsigned int FCS;
 }ethernet_heather_t;

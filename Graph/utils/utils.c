@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <math.h>
+#include <stdio.h>
 
 /*
  * prefix: pointer to an string representing an IP address
@@ -62,6 +64,63 @@ void layer2FillWithBroadcast(char *macArray)
 		macArray[i] = 0XFF;
 	}
 }
+
+unsigned int ip_addr_p_to_n(char *ipAddres)
+{
+	int locator = 0;
+	char *local[5];
+	local[locator] = ipAddres;
+	locator++;
+
+	unsigned int result = 0;
+
+	//'\0'
+
+	//Run this for a maximum of 16 positions in the char array
+	for(char * i = ipAddres ;i<(ipAddres + 16);i++)
+	{
+		//Find the end position of the first integer to capture
+		local[locator] = strpbrk(i,".");
+
+		if(locator == 4) break;
+		//update the position of the pointer to reflect the starting
+		//point of the next string
+		i = local[locator];
+		locator++;
+	}
+	//Now that I know where each point is located, I will extract the integers
+	//required to calculate the final result int
+
+	char *temp = NULL;
+	temp = (char *)malloc(16);
+	int exponent = 24; //Used to calculate the output of the number required
+	int temporal;
+	int offset;
+	char *value = NULL;
+	int number =0;
+	int passedOffset = 0;
+	//Extract each number and convert it
+	for(int i = 0; i<4;i++)
+	{
+		offset = (local[i+1]-local[i]);
+		//Make sure that the points are not taken into account
+		if(i==0)
+		 strncpy(temp, local[i], offset);
+		else if(i>0 && i<=2)
+		 strncpy(temp, (local[i] + 1), (offset-1));
+		//Copy the last section of the char *
+		else if(i ==3)
+		  strcpy(temp, (local[i]+1));
+		temporal = pow(2,exponent);
+		number = atoi(temp);
+		result += ( number * temporal);
+		exponent -=8;
+		strcpy(temp,"0");
+		passedOffset += offset;
+	}
+	return result;
+}
+
 
 
 
