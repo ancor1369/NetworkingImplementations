@@ -27,12 +27,17 @@ static char recvBuffer[MAX_PACKET_BUFFER_SIZE];
 static char sendBuffer[MAX_PACKET_BUFFER_SIZE];
 
 
+extern void layer2_frame_recev(node_t *node, interface_t *interface, char *pkt, unsigned int pkt_size);
+
+
 int pkt_receive(node_t *node, interface_t *interface, char *pkt, unsigned int pktSize)
 {
 	/*
 	 * Entry point into data link layer from physical layer
 	 * Ingress journey of the packet starts from here in TCP/IP stack
 	 */
+
+	//Make room in the receivd packat so that lower layers of the TCP IP stack have room to locate their headers
 
 	printf("msg received = %s, on node = %s, IIF = %s\n", pkt, node->node_name, interface->if_name);
 	return 0;
@@ -204,9 +209,6 @@ int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
 }
 
 
-
-
-
 int sendPktFlood(node_t *node, interface_t *exempted_int, char *pkt, unsigned int pktSize)
 {
 	int i = 0;
@@ -227,6 +229,8 @@ int sendPktFlood(node_t *node, interface_t *exempted_int, char *pkt, unsigned in
 	}
 	return 0;
 }
+
+
 
 
 

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "../graph.h"
 #include <arpa/inet.h>
+#include "../comm.h"
 
 
 void interfaceAssignMacAddress(interface_t *interface)
@@ -164,3 +165,33 @@ void convertIpFromIntToStr(unsigned int ipAddr, char *ipAddrOut)
 	inet_ntop(AF_INET, &ipAddr, ipAddrOut, 16);
 }
 
+char * pktBufferShiftRight(char *pkt, unsigned int pktSize, unsigned int totalBufferSize)
+{
+	int shiftPostions = 0;
+	totalBufferSize =  MAX_PACKET_BUFFER_SIZE -IF_NAME_SIZE;
+	shiftPostions = totalBufferSize - pktSize;
+
+	char * temp = NULL;
+	bool_t tempBuff = FALSE;
+
+	if(pktSize *2 > totalBufferSize)
+	{
+		tempBuff = TRUE;
+	}
+	if(tempBuff)
+	{
+		temp = calloc(1, pktSize);
+		memcpy(temp,pkt,pktSize);
+		memset(pkt,0,pktSize);
+		memcpy((pkt + shiftPostions), temp, pktSize);
+		free(temp);
+		return (pkt + shiftPostions);
+	}
+	//Copy the data directly to the required position
+	memcpy((pkt + shiftPostions), pkt, pktSize);
+	//clear the old data from the original position
+	memset(pkt,0,pktSize);
+	//Return the shifted pointer
+	return (pkt + shiftPostions);
+
+}

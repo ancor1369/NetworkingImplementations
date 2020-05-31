@@ -100,4 +100,6 @@ unsigned int convertIpFromStrToInt(char *ipAddr);
 
 void convertIpFromIntToStr(unsigned int ipAddr, char *ipAddrOut);
 
+char * pktBufferShiftRight(char *pkt, unsigned int pktSize, unsigned int totalBufferSize);
+
 #endif /* NET_NET_H_ */
