@@ -20,6 +20,29 @@
 	(*(unsigned int *)(((char *)(((ethernet_heather_t *)ethernet_heather_t)->payload) + payload_size)))
 
 
+typedef struct arp_entry_{
+	ipAddr_t ipAddr;
+	macAddr_t mac_addr;
+	char oif_name[IF_NAME_SIZE];
+	gddl_t arp_glue;
+}arp_entry_t;
+
+
+//APIS to support the operation of ARP protocol
+void initArpTable(arp_table_t **arp_table);
+
+arp_entry_t * arpTableLookup(arp_table_t *arpTable, char *ipAddr);
+
+void clearArpTable(arp_table_t *arpTable);
+
+void deleteArpTableEntry(arp_table_t *arpTable, char *ipAddr);
+
+bool_t arpTableEntryAdd(arp_entry_t *arpTable, arp_entry_t *arpEntry);
+
+void dumpArpTable(arp_table_t *arpTable);
+
+void arpTableUpdateFromArpReply(arp_table_t *arpTable, arp_header_t *arpHeader, interface_t *itf);
+
 #pragma pack (push, 1)
 typedef struct arp_header_{
 	short hwType;

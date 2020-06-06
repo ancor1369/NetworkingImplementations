@@ -35,13 +35,17 @@ typedef struct macAddr{
 	char mac[6];
 }macAddr_t;
 
+typedef struct arp_table_ arp_table_t;
+
 typedef struct nodeNwkProp_{
 	unsigned int flags;
 
 	/*L3 properties*/
 	bool_t isLbAddrConfig;
-	/*Loopback Address and node*/
-	ipAddr_t lbAddr;
+	ipAddr_t lbAddr; /*Loopback Address and node*/
+
+	/*L2 properties*/
+	arp_table_t *arpTable;
 }nodeNwkProp_t;
 
 
@@ -55,11 +59,14 @@ typedef struct intfNwkProps_{
 	char mask;
 }intfNwkProps_t;
 
+extern void initArpTable(arp_table_t **arptable);
+
 static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
 {
 	nodeNwkProp->flags = 0;
 	nodeNwkProp->isLbAddrConfig = FALSE;
 	memset(nodeNwkProp->lbAddr.ipAddr,0,16);
+	//initArpTable(&(nodeNwkProp->arpTable));
 }
 
 static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
