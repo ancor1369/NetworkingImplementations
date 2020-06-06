@@ -16,7 +16,9 @@ void ddlInit(gddl_t *baseGddl)
 	baseGddl->right = NULL;
 }
 
-//This function will add a new gddl_t after the indicated gddl
+/*
+ *This function will add a new gddl_t after the indicated gddl
+ */
 void ddlAddNext(gddl_t *baseGddl, gddl_t *newGddl)
 {
 	//This means that the base gddl is the last one

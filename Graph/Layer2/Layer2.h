@@ -19,6 +19,10 @@
 #define ETH_FCS(eth_hdr_ptr, payload_size) \
 	(*(unsigned int *)(((char *)(((ethernet_heather_t *)ethernet_heather_t)->payload) + payload_size)))
 
+/*ARP Table APIs*/
+typedef struct arp_table_{
+    gddl_t arp_entries;
+} arp_table_t;
 
 typedef struct arp_entry_{
 	ipAddr_t ipAddr;
@@ -65,6 +69,8 @@ typedef struct ethernet_header_{
 	unsigned int FCS;
 }ethernet_heather_t;
 #pragma pack(pop)
+
+GLTHREAD_TO_STRUCT(arp_glue_to_arp_entry, arp_entry_t, arp_glue);
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size);
 

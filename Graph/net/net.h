@@ -42,10 +42,12 @@ typedef struct nodeNwkProp_{
 
 	/*L3 properties*/
 	bool_t isLbAddrConfig;
+
 	ipAddr_t lbAddr; /*Loopback Address and node*/
 
 	/*L2 properties*/
 	arp_table_t *arpTable;
+
 }nodeNwkProp_t;
 
 
@@ -66,7 +68,7 @@ static inline void initNodeNwkProp(nodeNwkProp_t *nodeNwkProp)
 	nodeNwkProp->flags = 0;
 	nodeNwkProp->isLbAddrConfig = FALSE;
 	memset(nodeNwkProp->lbAddr.ipAddr,0,16);
-	//initArpTable(&(nodeNwkProp->arpTable));
+	initArpTable(&(nodeNwkProp->arpTable));
 }
 
 static inline void initIntfNwkProp(intfNwkProps_t *intNwkProp)
