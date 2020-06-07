@@ -12,6 +12,8 @@
 #include "../gddl/gddl.h"
 #include "../graph.h"
 
+#define ARP_BROAD_REQ   1
+
 #define ETH_HEADER_SIZE_EXCL_PAYLOAD (ethernetHeader_ptr) \
 	(sizeof(ethernet_heather_t) - sizeof(((ethernet_heather_t *)0)->payload))
 
@@ -32,26 +34,12 @@ typedef struct arp_entry_{
 }arp_entry_t;
 
 
-//APIS to support the operation of ARP protocol
-void initArpTable(arp_table_t **arp_table);
-
-arp_entry_t * arpTableLookup(arp_table_t *arpTable, char *ipAddr);
-
-void clearArpTable(arp_table_t *arpTable);
-
-void deleteArpTableEntry(arp_table_t *arpTable, char *ipAddr);
-
-bool_t arpTableEntryAdd(arp_entry_t *arpTable, arp_entry_t *arpEntry);
-
-void dumpArpTable(arp_table_t *arpTable);
-
-void arpTableUpdateFromArpReply(arp_table_t *arpTable, arp_header_t *arpHeader, interface_t *itf);
-
 #pragma pack (push, 1)
 typedef struct arp_header_{
 	short hwType;
 	short protoType;
 	char hwAddrLen;
+	char proto_addr_len;    /*4 for IPV4*/
 	short opCode;
 	macAddr_t srcMac;
 	unsigned int srcIp;
@@ -70,6 +58,26 @@ typedef struct ethernet_header_{
 }ethernet_heather_t;
 #pragma pack(pop)
 
+
+
+
+//APIS to support the operation of ARP protocol
+void initArpTable(arp_table_t **arp_table);
+
+arp_entry_t * arpTableLookup(arp_table_t *arpTable, char *ipAddr);
+
+void clearArpTable(arp_table_t *arpTable);
+
+void deleteArpTableEntry(arp_table_t *arpTable, char *ipAddr);
+
+bool_t arpTableEntryAdd(arp_table_t *arpTable, arp_entry_t *arpEntry);
+
+void dumpArpTable(arp_table_t *arpTable);
+
+void arpTableUpdateFromArpReply(arp_table_t *arpTable, arp_header_t *arpHeader, interface_t *itf);
+
+
+void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr);
 GLTHREAD_TO_STRUCT(arp_glue_to_arp_entry, arp_entry_t, arp_glue);
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size);

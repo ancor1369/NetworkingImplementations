@@ -21,6 +21,8 @@
 #define L2_SWITCH   (1 << 1)
 #define HUB         (1 << 2)
 
+#define NODE_ARP_TABLE(node_ptr)    (node_ptr->nodeNwkProp.arpTable)
+
 typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
 typedef struct node_ node_t;

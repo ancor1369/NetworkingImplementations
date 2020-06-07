@@ -8,6 +8,7 @@
 #include "Layer2.h"
 #include "../gddl/gddl.h"
 #include "../tcpconstants.h"
+#include <sys/socket.h>
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size)
 {
@@ -90,7 +91,55 @@ void clearArpTable(arp_table_t *arpTable)
 
 }
 
+void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr)
+{
+	 /*Take memory which can accomodate Ethernet hdr + ARP hdr*/
+	    ethernet_heather_t *ethernet_hdr = calloc(1, sizeof(ethernet_heather_t) +
+	                                        sizeof(arp_header_t));
 
+	    if(!oif){
+
+	        oif = nodeGetMatchingSubnetInterface(node, ipAddr);
+	        if(!oif){
+	            printf("Error : %s : No eligible subnet for ARP resolution for Ip-address : %s",
+	                    node->node_name, ipAddr);
+	            return;
+	        }
+	    }
+	    /*STEP 1 : Prepare ethernet hdr*/
+	    layer2FillWithBroadcast(ethernet_hdr->dstMAC.mac);
+	    //layer2_fill_with_broadcast_mac(ethernet_hdr->dstMAC.mac);//->dst_mac.mac);
+	    memcpy(ethernet_hdr->srcMAC.mac, IF_MAC(oif), sizeof(macAddr_t));
+	    ethernet_hdr->type = ARP_MSG;
+
+	    /*Step 2 : Prepare ARP Broadcast Request Msg out of oif*/
+	    arp_header_t *arp_hdr = (arp_header_t *)(ethernet_hdr->payload);
+	    arp_hdr->hwType = 1;
+	    arp_hdr->protoType = 0x0800;
+	    arp_hdr->hwAddrLen = sizeof(macAddr_t);
+	    arp_hdr ->proto_addr_len = 4;
+
+	    arp_hdr->opCode = ARP_BROAD_REQ;
+
+	    memcpy(arp_hdr->srcMac.mac, IF_MAC(oif), sizeof(macAddr_t));
+
+	    inet_pton(AF_INET, IF_IP(oif), &arp_hdr->srcIp);
+	    arp_hdr->srcIp = htonl(arp_hdr->srcIp);
+
+	    memset(arp_hdr->dstMac.mac, 0,  sizeof(macAddr_t));
+
+	    inet_pton(AF_INET, ipAddr, &arp_hdr->dstIp);
+	    arp_hdr->dstIp = htonl(arp_hdr->dstIp);
+
+	    ethernet_hdr->FCS = 0; /*Not used*/
+
+	    /*STEP 3 : Now dispatch the ARP Broadcast Request Packet out of interface*/
+	    sendPktOut((char *)ethernet_hdr, sizeof(ethernet_hdr) + sizeof(arp_header_t),oif);
+
+
+
+	    free(ethernet_hdr);
+}
 
 
 

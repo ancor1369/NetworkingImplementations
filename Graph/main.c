@@ -22,20 +22,20 @@ graph_t *topo = NULL;
 
 int main(int argc, char **argv)
 {
-//	nwInitCLI();
-////	topo = build_first_topo();
+	nwInitCLI();
+	topo = build_first_topo();
 //	topo = build_lineal_topo();
-//
-//	start_shell();
 
-	char *ip_add_str = NULL;
-	ip_add_str = (char*)malloc(16);
-	char *IP = "192.168.0.15\0";
-	unsigned int result = 0;
-	result = ip_addr_p_to_n(IP);
-	printf("This is the result: %u \n", result);
-	ip_addr_n_to_p(result, ip_add_str);
-	printf("This is the ip again. %s \n", ip_add_str);
+	start_shell();
+
+//	char *ip_add_str = NULL;
+//	ip_add_str = (char*)malloc(16);
+//	char *IP = "192.168.0.15\0";
+//	unsigned int result = 0;
+//	result = ip_addr_p_to_n(IP);
+//	printf("This is the result: %u \n", result);
+//	ip_addr_n_to_p(result, ip_add_str);
+//	printf("This is the ip again. %s \n", ip_add_str);
 
 
 	return 0;
