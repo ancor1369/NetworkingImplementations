@@ -98,27 +98,12 @@ void initUdpSocket(node_t *node)
 	node_addr.sin_family      = AF_INET;
 	node_addr.sin_port        = node->udpPortNumber;
 	node_addr.sin_addr.s_addr = INADDR_ANY;
-	if (bind(udp_sock_fd, (struct sockaddr *)&node_addr, sizeof(struct sockaddr)) == -1) {
-		printf("Error : socket bind failed for Node %s\n", node->node_name);
+    if (bind(udp_sock_fd, (struct sockaddr *)&node_addr, sizeof(struct sockaddr)) == -1) {
+		printf("Error : socket bind failed for Node %s, Port number %d \n", node->node_name, node->udpPortNumber);
 		return;
 	}
 
 	node->udpSocketFileDescriptor = udp_sock_fd;
-
-	//	node->udpPortNumber = getNextUdpPortNumber();
-//	int udpSockFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-//
-//	struct sockaddr_in nodeAddr;
-//	nodeAddr.sin_family = AF_INET;
-//	nodeAddr.sin_port = node->udpPortNumber;
-//	nodeAddr.sin_addr.s_addr = INADDR_ANY;
-//
-//	if(bind(udpSockFileDescriptor,(struct sockaddr *)&nodeAddr, sizeof(struct sockaddr))==-1)
-//	{
-//		printf("Error: socket bind failed for Node %s/n", node->node_name);
-//		return;
-//	}
-//	node->udpSocketFileDescriptor = udpSockFileDescriptor;
 }
 
 

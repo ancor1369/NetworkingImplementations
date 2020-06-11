@@ -32,11 +32,11 @@ node_t *create_graph_node(graph_t *graph, char *node_name)
 {
 	node_t *node = calloc(1,sizeof(node_t));
 	strncpy(node->node_name,node_name, NODE_NAME_SIZE);
-	node->node_name[NODE_NAME_SIZE] = '\0';
+	node->node_name[NODE_NAME_SIZE - 1] = '\0';
 
 	initUdpSocket(node);
-	initNodeNwkProp(&node->nodeNwkProp);
 
+	initNodeNwkProp(&node->nodeNwkProp);
 	ddlInit(&node->graph_glue);
 	ddlAddNext(&graph->node_list,&node->graph_glue);
 
