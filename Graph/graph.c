@@ -40,14 +40,6 @@ node_t *create_graph_node(graph_t *graph, char *node_name)
 	ddlInit(&node->graph_glue);
 	ddlAddNext(&graph->node_list,&node->graph_glue);
 
-
-	int i;
-//	for(i=0;i<MAX_INTF_PER_NODE;i++)
-//	{
-//		initIntfNwkProp(&node->intf[i]->infNwkProps);
-//		interfaceAssignMacAddress(node->intf[i]);
-//	}
-
 	return node;
 }
 
@@ -72,11 +64,21 @@ void insert_link_between_two_nodes(node_t *node1,node_t *node2,
 
     int emptyInitSlot;
 
+    /*Plug interface ends into Node*/
+
     emptyInitSlot = get_node_intf_available_slot(node1);
     node1->intf[emptyInitSlot] = &link->intf1;
 
     emptyInitSlot = get_node_intf_available_slot(node2);
     node2->intf[emptyInitSlot] = &link->intf2;
+
+    initIntfNwkProp(&link->intf1.infNwkProps);
+    initIntfNwkProp(&link->intf2.infNwkProps);
+
+    /*Assign random Generated MAC address to the interface*/
+    interfaceAssignMacAddress(&link->intf1);
+    interfaceAssignMacAddress(&link->intf2);
+
 }
 
 

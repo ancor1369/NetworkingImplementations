@@ -81,20 +81,44 @@ static unsigned int getNextUdpPortNumber()
 
 void initUdpSocket(node_t *node)
 {
+
+	if(node->udpPortNumber)
+	        return;
+
 	node->udpPortNumber = getNextUdpPortNumber();
-	int udpSockFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-	struct sockaddr_in nodeAddr;
-	nodeAddr.sin_family = AF_INET;
-	nodeAddr.sin_port = node->udpPortNumber;
-	nodeAddr.sin_addr.s_addr = INADDR_ANY;
+	int udp_sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 
-	if(bind(udpSockFileDescriptor,(struct sockaddr *)&nodeAddr, sizeof(struct sockaddr))==-1)
-	{
-		printf("Error: socket bind failed for Node %s/n", node->node_name);
+	if(udp_sock_fd == -1){
+		printf("Socket Creation Failed for node %s\n", node->node_name);
 		return;
 	}
-	node->udpSocketFileDescriptor = udpSockFileDescriptor;
+
+	struct sockaddr_in node_addr;
+	node_addr.sin_family      = AF_INET;
+	node_addr.sin_port        = node->udpPortNumber;
+	node_addr.sin_addr.s_addr = INADDR_ANY;
+	if (bind(udp_sock_fd, (struct sockaddr *)&node_addr, sizeof(struct sockaddr)) == -1) {
+		printf("Error : socket bind failed for Node %s\n", node->node_name);
+		return;
+	}
+
+	node->udpSocketFileDescriptor = udp_sock_fd;
+
+	//	node->udpPortNumber = getNextUdpPortNumber();
+//	int udpSockFileDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+//
+//	struct sockaddr_in nodeAddr;
+//	nodeAddr.sin_family = AF_INET;
+//	nodeAddr.sin_port = node->udpPortNumber;
+//	nodeAddr.sin_addr.s_addr = INADDR_ANY;
+//
+//	if(bind(udpSockFileDescriptor,(struct sockaddr *)&nodeAddr, sizeof(struct sockaddr))==-1)
+//	{
+//		printf("Error: socket bind failed for Node %s/n", node->node_name);
+//		return;
+//	}
+//	node->udpSocketFileDescriptor = udpSockFileDescriptor;
 }
 
 

@@ -93,6 +93,8 @@ static int arp_handler(param_t *param, ser_buff_t *tlv_buf, op_mode enabable_or_
 	{
 		if(strncmp(tlv->leaf_id, "node-name", strlen("node-name"))==0)
 			nodeName = tlv->value;
+		else if(strncmp(tlv->leaf_id, "ip-address", strlen("ip-address"))==0)
+			ipAddr = tlv->value;
 	}TLV_LOOP_END;
 	node = getNodeByNodeName(topo, nodeName);
 	sendArpBroadcastRequest(node, NULL, ipAddr);

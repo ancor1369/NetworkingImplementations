@@ -14,12 +14,36 @@
 #include "../comm.h"
 
 
+/*Just some Random number generator*/
+static unsigned int
+hash_code(void *ptr, unsigned int size){
+    unsigned int value=0, i =0;
+    char *str = (char*)ptr;
+    while(i < size)
+    {
+        value += *str;
+        value*=97;
+        str++;
+        i++;
+    }
+    return value;
+}
+
+
 void interfaceAssignMacAddress(interface_t *interface)
 {
+
+	node_t *node = interface->att_node;
+
+	if(!node)
+		return;
+
+	unsigned int hash_code_val = 0;
+	hash_code_val = hash_code(node->node_name, NODE_NAME_SIZE);
+	hash_code_val *= hash_code(interface->if_name, IF_NAME_SIZE);
     //Resets the content of the variable
-    memset(IF_MAC(interface), 0,48);
-    strcpy(IF_MAC(interface), interface->att_node->node_name);
-    strcat(IF_MAC(interface), interface->if_name);
+    memset(IF_MAC(interface), 0,sizeof(IF_MAC(interface)));
+    memcpy(IF_MAC(interface), (char *)&hash_code_val, sizeof(unsigned int));
 }
 
 //APIs to set network properties
@@ -82,10 +106,11 @@ void dumpIntfProps(interface_t *interface)
 	else{
 		printf("\t IP Addr = %s/%u", "Nil", 0);
 	}
-	printf("\t MAC : %u:%u:%u:%u:%u:%u:\n",
-			IF_MAC(interface)[0], IF_MAC(interface)[1],
-			IF_MAC(interface)[2], IF_MAC(interface)[3],
-			IF_MAC(interface)[4], IF_MAC(interface)[5]);
+
+	 printf("\t MAC : %u:%u:%u:%u:%u:%u\n",
+	                IF_MAC(interface)[0], IF_MAC(interface)[1],
+	                IF_MAC(interface)[2], IF_MAC(interface)[3],
+	                IF_MAC(interface)[4], IF_MAC(interface)[5]);
 }
 
 ///Dumping functions to get information about the setting
@@ -126,30 +151,60 @@ void dumpNwkGraph(graph_t *graph)
 
 interface_t * nodeGetMatchingSubnetInterface(node_t *node, char *ipAddr)
 {
-	int i;
-	char *tempAddIntf = NULL;
-	char *tempAddPro = NULL;
-	char resultInterface[16];
-	char resultProvided[16];
-	uint32_t binaryInterface;
-	uint32_t binaryProvided;
-	for(i=0;i<sizeof(node->intf); i++)
-	{
-		//Obtain the IP address of each interface and then get the
-		//network after getting the mask
-		tempAddIntf = node->intf[i]->infNwkProps.ipAddr.ipAddr;
-		applyMask(tempAddIntf, node->intf[i]->infNwkProps.mask, resultInterface);
-		//Get the network of the provided ipAddress
-		applyMask(tempAddPro, node->intf[i]->infNwkProps.mask, resultProvided);
-		//Compare the two networks and decide what to do
-		//TODO: Compare the two IP addresses by using the arpa set of libraries so that it is easy to make sure we are talking about the same
-		binaryInterface = inet_addr(tempAddIntf);
-		binaryProvided = inet_addr(ipAddr);
-		if(binaryInterface == binaryProvided)
-		{
-			return node->intf[i];
-		}
+
+	unsigned int i = 0;
+	interface_t *intf;
+
+	char *intf_addr = NULL;
+	char mask;
+	char intf_subnet[16];
+	char subnet2[16];
+
+	for( ; i < MAX_INTF_PER_NODE; i++){
+
+		intf = node->intf[i];
+		if(!intf) return NULL;
+
+		if(intf->infNwkProps.isIsIPAddrConfig == FALSE)
+			continue;
+
+		intf_addr = IF_IP(intf);
+		mask = intf->infNwkProps.mask;
+
+		memset(intf_subnet, 0 , 16);
+		memset(subnet2, 0 , 16);
+		applyMask(intf_addr, mask, intf_subnet);
+		applyMask(ipAddr, mask, subnet2);
+
+		if(strncmp(intf_subnet, subnet2, 16) == 0)
+			return intf;
 	}
+
+
+//	int i;
+//	char *tempAddIntf = NULL;
+//	char *tempAddPro = NULL;
+//	char resultInterface[16];
+//	char resultProvided[16];
+//	uint32_t binaryInterface;
+//	uint32_t binaryProvided;
+//	for(i=0;i<sizeof(node->intf); i++)
+//	{
+//		//Obtain the IP address of each interface and then get the
+//		//network after getting the mask
+//		tempAddIntf = node->intf[i]->infNwkProps.ipAddr.ipAddr;
+//		applyMask(tempAddIntf, node->intf[i]->infNwkProps.mask, resultInterface);
+//		//Get the network of the provided ipAddress
+//		applyMask(tempAddPro, node->intf[i]->infNwkProps.mask, resultProvided);
+//		//Compare the two networks and decide what to do
+//		//TODO: Compare the two IP addresses by using the arpa set of libraries so that it is easy to make sure we are talking about the same
+//		binaryInterface = inet_addr(tempAddIntf);
+//		binaryProvided = inet_addr(ipAddr);
+//		if(binaryInterface == binaryProvided)
+//		{
+//			return node->intf[i];
+//		}
+//	}
 	//If the algorithm reaches this section, it means that non of the interfaces
 	//Met the requirement to be selected as the needed route
 	return NULL;
