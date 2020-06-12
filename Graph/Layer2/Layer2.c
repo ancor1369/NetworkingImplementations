@@ -94,8 +94,8 @@ void clearArpTable(arp_table_t *arpTable)
 void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr)
 {
 	 /*Take memory which can accomodate Ethernet hdr + ARP hdr*/
-	    ethernet_heather_t *ethernet_hdr = calloc(1, sizeof(ethernet_heather_t) +
-	                                        sizeof(arp_header_t));
+    unsigned int payload_size = sizeof(arp_header_t);
+	ethernet_heather_t *ethernet_hdr = (ethernet_heather_t *)calloc(1, ETH_HDR_SIZE_EXCL_PAYLOAD + payload_size);
 
 	    if(!oif){
 

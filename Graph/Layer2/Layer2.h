@@ -14,6 +14,10 @@
 
 #define ARP_BROAD_REQ   1
 
+#define ETH_HDR_SIZE_EXCL_PAYLOAD   \
+    (sizeof(ethernet_heather_t) - sizeof(((ethernet_heather_t *)0)->payload))
+
+
 #define ETH_HEADER_SIZE_EXCL_PAYLOAD (ethernetHeader_ptr) \
 	(sizeof(ethernet_heather_t) - sizeof(((ethernet_heather_t *)0)->payload))
 

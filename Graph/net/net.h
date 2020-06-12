@@ -29,13 +29,15 @@ typedef struct node_ node_t;
 
 //This can represent even an IPv6 Ip address which is 16 bytes long
 //It requires to be unsigned because char is composed of 8 bits each from 0 255.
+#pragma pack (push,1)
 typedef struct ipAddr{
 	unsigned char ipAddr[16];
 }ipAddr_t;
 
 typedef struct macAddr{
-	char mac[6];
+	unsigned char mac[6];
 }macAddr_t;
+#pragma pack(pop)
 
 typedef struct arp_table_ arp_table_t;
 

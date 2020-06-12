@@ -14,7 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <netdb.h>
+#include <netdb.h> /*for struct hostent*/
+#include "net/net.h"
+#include <unistd.h> // for close
 
 
 
@@ -187,6 +189,11 @@ int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
 	if(!nextNode)
 		return -1;
 
+	 if(pktSize + IF_NAME_SIZE > MAX_PACKET_BUFFER_SIZE){
+	        printf("Error : Node :%s, Pkt Size exceeded\n", sending_node->node_name);
+	        return -1;
+	    }
+
 	unsigned int dstUdtPortNo = nextNode->udpPortNumber;
 
 	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -206,7 +213,7 @@ int sendPktOut(char *packet, unsigned int pktSize, interface_t *interface)
 
 	//Cppy the name of the interface in the first section of the buffer
 	strncpy(pktWithAuxData, otherInterface->if_name, IF_NAME_SIZE);
-	pktWithAuxData[IF_NAME_SIZE] = '\0';
+	pktWithAuxData[IF_NAME_SIZE - 1] = '\0';
 
 	//move the starting point of the buffer by IF_NAME_SIZE and copy the packet content there
 	memcpy(pktWithAuxData + IF_NAME_SIZE, packet, pktSize);

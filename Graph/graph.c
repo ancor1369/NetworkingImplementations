@@ -11,6 +11,9 @@
 #include <string.h>
 #include <stdio.h>
 
+
+extern void initUdpSocket(node_t *node);
+
 /* Implement the creation of a new graph, allocate memory to hold the data structure
  * and initilize the internal varialbes to be taken care of*/
 graph_t *create_new_graph(char *topology_name)
@@ -50,9 +53,9 @@ void insert_link_between_two_nodes(node_t *node1,node_t *node2,
 	link_t *link = calloc(1,sizeof(link_t));
 	//Set the names of the link
     strncpy(link->intf1.if_name, from_if_name, IF_NAME_SIZE);
-    link->intf1.if_name[IF_NAME_SIZE] = '\0';
+    link->intf1.if_name[IF_NAME_SIZE -1 ] = '\0';
     strncpy(link->intf2.if_name, to_if_name, IF_NAME_SIZE);
-    link->intf2.if_name[IF_NAME_SIZE] = '\0';
+    link->intf2.if_name[IF_NAME_SIZE - 1] = '\0';
 
     //set backpointers to link
     link->intf1.link = link;
