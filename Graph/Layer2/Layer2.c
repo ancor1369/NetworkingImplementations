@@ -9,6 +9,7 @@
 #include "../gddl/gddl.h"
 #include "../tcpconstants.h"
 #include <sys/socket.h>
+#include "../comm.h"
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size)
 {
@@ -179,7 +180,37 @@ void dumpArpTable(arp_table_t *arpTable)
 
 static void sendArpReplyMessage(ethernet_heather_t *ethernet_hearder, interface_t *iif)
 {
+	arp_header_t *arpHederIn = (arp_header_t *)(GET_ETHERNET_HDR_PAYLOAD(ethernet_hearder));
+	ethernet_heather_t *ethernetHeaderReply = (ethernet_heather_t *)calloc(1,MAX_PACKET_BUFFER_SIZE);
 
+	memcpy(ethernetHeaderReply->dstMAC.mac, arpHederIn->srcMac,sizeof(macAddr_t));
+	memcpy(ethernetHeaderReply->srcMAC.mac, IF_MAC(iif), sizeof(macAddr_t));
+
+	ethernetHeaderReply->type = ARP_MSG;
+	arp_header_t *arpHeaderReply = (arp_header_t*)(GET_ETHERNET_HDR_PAYLOAD(ethernetHeaderReply));
+
+	arpHeaderReply->hwType = 1;
+	arpHeaderReply->protoType = 0x0800;
+	arpHeaderReply->hwAddrLen = sizeof(macAddr_t);
+	arpHeaderReply->proto_addr_len = 4;
+
+	arpHeaderReply->opCode = ARP_REPLY;
+	memcpy(arpHeaderReply->srcMac.mac, IF_MAC(iif), sizeof(macAddr_t));
+
+	inet_pton(AF_INET, IF_IP(iif), &arpHeaderReply->srcIp);
+	arpHeaderReply->srcIp = htonl(arpHeaderReply->srcIp);
+
+	memcpy(arpHeaderReply->dstMac.mac, arpHederIn->srcMac.mac, sizeof(macAddr_t));
+	arpHeaderReply->dstIp = arpHederIn->srcIp;
+
+	ETH_FCS(ethernetHeaderReply, sizeof(arp_header_t)) = 0;
+
+	unsigned int totalPksSize = ETH_HDR_SIZE_EXCL_PAYLOAD + sizeof(arp_header_t);
+
+	char *shiftedPacketBuffer = pktBufferShiftRight((char *)ethernetHeaderReply, totalPksSize, MAX_PACKET_BUFFER_SIZE);
+
+	sendPktOut(shiftedPacketBuffer, totalPksSize, iif);
+	free(ethernetHeaderReply);
 }
 
 static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_heather_t *ethernetHeader)
@@ -197,7 +228,7 @@ static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_
 
 	if(strncmp(IF_IP(iif), ipAddr,16))
 	{
-		printf("%s : ARP Broadcast req meg dropped, Dst IP address %s dod not mtch with interface ip: %s\n",node->node_name, ipAddr, IF_IP(iif));
+		printf("%s : ARP Broadcast request messagr dropped, Destination IP address %s did not match with interface IP: %s\n",node->node_name, ipAddr, IF_IP(iif));
 	}
 	sendArpReplyMessage(ethernetHeader, iif);
 }

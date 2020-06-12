@@ -29,6 +29,8 @@ static char recvBuffer[MAX_PACKET_BUFFER_SIZE];
 static char sendBuffer[MAX_PACKET_BUFFER_SIZE];
 
 
+
+
 extern void layer2_frame_recev(node_t *node, interface_t *interface, char *pkt, unsigned int pkt_size);
 
 
