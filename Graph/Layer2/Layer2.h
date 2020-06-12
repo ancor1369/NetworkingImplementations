@@ -22,8 +22,12 @@
 	(sizeof(ethernet_heather_t) - sizeof(((ethernet_heather_t *)0)->payload))
 
 
-#define ETH_FCS(eth_hdr_ptr, payload_size) \
-	(*(unsigned int *)(((char *)(((ethernet_heather_t *)ethernet_heather_t)->payload) + payload_size)))
+//#define ETH_FCS(ethernet_heather_t_ptr, payload_size) \
+//	(*(unsigned int *)(((char *)(((ethernet_heather_t *)ethernet_heather_t_ptr).payload) + payload_size)))
+
+#define ETH_FCS(eth_hdr_ptr, payload_size)  \
+    (*(unsigned int *)(((char *)(((ethernet_heather_t *)eth_hdr_ptr)->payload) + payload_size)))
+
 
 /*ARP Table APIs*/
 typedef struct arp_table_{
@@ -111,5 +115,15 @@ l2FrameReceivedQulifyOnInterface(interface_t *interface, ethernet_heather_t *eth
 	return FALSE;
 }
 
+
+static inline char *
+GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
+
+//   if(is_pkt_vlan_tagged(ethernet_hdr)){
+//        return ((vlan_ethernet_hdr_t *)(ethernet_hdr))->payload;
+//   }
+//   else
+       return ethernet_hdr->payload;
+}
 
 #endif /* LAYER2_LAYER2_H_ */

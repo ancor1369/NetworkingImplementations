@@ -250,3 +250,42 @@ char * pktBufferShiftRight(char *pkt, unsigned int pktSize, unsigned int totalBu
 	return (pkt + shiftPostions);
 
 }
+
+
+
+/*Returns the local interface of the node which is configured
+ * with subnet in which 'ip_addr' lies
+ * */
+interface_t *
+node_get_matching_subnet_interface(node_t *node, char *ip_addr){
+
+    unsigned int i = 0;
+    interface_t *intf;
+
+    char *intf_addr = NULL;
+    char mask;
+    char intf_subnet[16];
+    char subnet2[16];
+
+    for( ; i < MAX_INTF_PER_NODE; i++){
+
+        intf = node->intf[i];
+        if(!intf) return NULL;
+
+        if(intf->infNwkProps.isIsIPAddrConfig == FALSE)
+            continue;
+
+        intf_addr = IF_IP(intf);
+        mask = intf->infNwkProps.mask;
+
+        memset(intf_subnet, 0 , 16);
+        memset(subnet2, 0 , 16);
+        applyMask(intf_addr, mask, intf_subnet);
+        applyMask(ip_addr, mask, subnet2);
+
+        if(strncmp(intf_subnet, subnet2, 16) == 0){
+            return intf;
+        }
+    }
+}
+

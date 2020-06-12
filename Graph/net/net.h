@@ -115,4 +115,6 @@ void convertIpFromIntToStr(unsigned int ipAddr, char *ipAddrOut);
 
 char * pktBufferShiftRight(char *pkt, unsigned int pktSize, unsigned int totalBufferSize);
 
+interface_t * node_get_matching_subnet_interface(node_t *node, char *ip_addr);
+
 #endif /* NET_NET_H_ */

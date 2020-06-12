@@ -131,17 +131,14 @@ void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr)
 	    inet_pton(AF_INET, ipAddr, &arp_hdr->dstIp);
 	    arp_hdr->dstIp = htonl(arp_hdr->dstIp);
 
-	    ethernet_hdr->FCS = 0; /*Not used*/
+	    //ethernet_hdr->FCS = 0; /*Not used*/
+	    ETH_FCS(ethernet_hdr, sizeof(arp_header_t)) = 0;
 
 	    /*STEP 3 : Now dispatch the ARP Broadcast Request Packet out of interface*/
 	    sendPktOut((char *)ethernet_hdr, sizeof(ethernet_hdr) + sizeof(arp_header_t),oif);
 
-
-
 	    free(ethernet_hdr);
 }
-
-
 
 void dumpArpTable(arp_table_t *arpTable)
 {
@@ -164,4 +161,44 @@ void dumpArpTable(arp_table_t *arpTable)
 	}ITERATE_GDDL_END(&arpTable->arp_entries, curr)
 }
 
+
+//void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr)
+//{
+//
+//}
+//
+//static void processArpReployMessage(ethernet_heather_t *ethernetHeaderIn, interface_t *oif){
+//
+//}
+//
+//static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_heather_t *ethernetHeader)
+//{
+//
+//}
+//
+
+static void sendArpReplyMessage(ethernet_heather_t *ethernet_hearder, interface_t *iif)
+{
+
+}
+
+static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_heather_t *ethernetHeader)
+{
+	printf("%s : ARP Broadcast msg received on interface %s of node %s \n",
+			__FUNCTION__, iif->att_node->node_name);
+
+	char ipAddr[16];
+	arp_header_t *arpHeader = (arp_header_t *)(GET_ETHERNET_HDR_PAYLOAD(ethernetHeader));
+
+	unsigned int arpDestIp = htonl(arpHeader->dstIp);
+	inet_ntop(AF_INET, &arpDestIp, ipAddr,16);
+
+	ipAddr[15] = '\0';
+
+	if(strncmp(IF_IP(iif), ipAddr,16))
+	{
+		printf("%s : ARP Broadcast req meg dropped, Dst IP address %s dod not mtch with interface ip: %s\n",node->node_name, ipAddr, IF_IP(iif));
+	}
+	sendArpReplyMessage(ethernetHeader, iif);
+}
 
