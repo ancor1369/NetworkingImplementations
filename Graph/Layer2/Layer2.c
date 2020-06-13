@@ -163,27 +163,20 @@ void dumpArpTable(arp_table_t *arpTable)
 }
 
 
-//void sendArpBroadcastRequest(node_t *node, interface_t *oif, char *ipAddr)
-//{
-//
-//}
-//
-//static void processArpReployMessage(ethernet_heather_t *ethernetHeaderIn, interface_t *oif){
-//
-//}
-//
-//static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_heather_t *ethernetHeader)
-//{
-//
-//}
-//
+static void processArpReployMessage(node_t *node, interface_t *oif, ethernet_heather_t *ethernetHeader)
+{
+	printf("%s : ARP reply message received on interface %s of node %s\n",
+			__FUNCTION__, oif->if_name, oif->att_node->node_name);
+
+	arpTableUpdateFromArpReply(NODE_ARP_TABLE(node),(arp_header_t*)GET_ETHERNET_HDR_PAYLOAD(ethernetHeader),oif);
+}
 
 static void sendArpReplyMessage(ethernet_heather_t *ethernet_hearder, interface_t *iif)
 {
 	arp_header_t *arpHederIn = (arp_header_t *)(GET_ETHERNET_HDR_PAYLOAD(ethernet_hearder));
 	ethernet_heather_t *ethernetHeaderReply = (ethernet_heather_t *)calloc(1,MAX_PACKET_BUFFER_SIZE);
 
-	memcpy(ethernetHeaderReply->dstMAC.mac, arpHederIn->srcMac,sizeof(macAddr_t));
+	memcpy(ethernetHeaderReply->dstMAC.mac, arpHederIn->srcMac.mac,sizeof(macAddr_t));
 	memcpy(ethernetHeaderReply->srcMAC.mac, IF_MAC(iif), sizeof(macAddr_t));
 
 	ethernetHeaderReply->type = ARP_MSG;
@@ -228,8 +221,46 @@ static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_
 
 	if(strncmp(IF_IP(iif), ipAddr,16))
 	{
-		printf("%s : ARP Broadcast request messagr dropped, Destination IP address %s did not match with interface IP: %s\n",node->node_name, ipAddr, IF_IP(iif));
+		printf("%s : ARP Broadcast request message dropped, Destination IP address %s did not match with interface IP: %s\n",node->node_name, ipAddr, IF_IP(iif));
 	}
 	sendArpReplyMessage(ethernetHeader, iif);
+}
+
+void layer2_frame_recv(node_t *node, interface_t *interface,char *pkt, unsigned int pkt_size)
+{
+    unsigned int vlan_id_to_tag = 0;
+
+    ethernet_heather_t *ethernet_hdr = (ethernet_heather_t *)pkt;
+
+    if(l2FrameReceivedQulifyOnInterface(interface, ethernet_hdr) == FALSE)
+    {
+        printf("L2 Frame Rejected on node %s\n", node->node_name);
+        return;
+    }
+
+    printf("L2 Frame Accepted on node %s\n", node->node_name);
+
+    switch(ethernet_hdr->type)
+    {
+    case ARP_MSG:
+		{
+			arp_header_t *arp_header = (arp_header_t *)(ethernet_hdr->payload);
+			switch (arp_header->opCode) {
+				case ARP_BROAD_REQ:
+					processArpBroadcastRequest(node, interface, ethernet_hdr);
+					break;
+				case ARP_REPLY:
+					processArpReployMessage(node, interface, ethernet_hdr);
+					break;
+				default:
+					break;
+			}
+		}
+		break;
+    default:
+    	//promotePktToLayer3(node,interface,pkt,pkt_size);
+    	break;
+
+    }
 }
 

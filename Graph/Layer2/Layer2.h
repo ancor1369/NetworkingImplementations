@@ -95,8 +95,7 @@ static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsi
  * be processed or not by the routing device. This enforces
  * L3 processing rules
 */
-static inline bool_t
-l2FrameReceivedQulifyOnInterface(interface_t *interface, ethernet_heather_t *ethernetHEader)
+static inline bool_t l2FrameReceivedQulifyOnInterface(interface_t *interface, ethernet_heather_t *ethernetHEader)
 {
 	if(!IS_INTF_L3_MODE(interface))
 		return FALSE;
