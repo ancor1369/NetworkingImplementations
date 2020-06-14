@@ -11,6 +11,16 @@
 #include <sys/socket.h>
 #include "../comm.h"
 
+
+typedef struct macTableEntry_{
+	macAddr_t mac;//key
+	char oifName[IF_NAME_SIZE];
+	gddl_t macEntryGlue //For linked list insertion
+}macTableEntry_t;
+
+
+
+
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size)
 {
 	ethernet_heather_t *ethernetHeader;
@@ -262,5 +272,76 @@ void layer2_frame_recv(node_t *node, interface_t *interface,char *pkt, unsigned 
     	break;
 
     }
+}
+
+/*Interface config APIs for L2 mode configuration*/
+
+void interfaceSetL2Mode(node_t *node, interface_t *interface, char *l2_mode_option)
+{
+    intfL2Mode_t intf_l2_mode;
+
+    if(strncmp(l2_mode_option, "access", strlen("access")) == 0){
+        intf_l2_mode = ACCESS;
+    }
+    else if(strncmp(l2_mode_option, "trunk", strlen("trunk")) ==0){
+        intf_l2_mode = TRUNK;
+    }
+    else{
+        assert(0);
+    }
+
+    /*Case 1 : if interface is working in L3 mode, i.e. IP address is configured.
+     * then disable ip address, and set interface in L2 mode*/
+    if(IS_INTF_L3_MODE(interface)){
+        interface->infNwkProps.isIsIPAddrConfig = FALSE;
+    	//interface->intf_nw_props.is_ipadd_config_backup = TRUE;
+
+        IF_L2_MODE(interface) = intf_l2_mode;
+        return;
+    }
+
+    /*Case 2 : if interface is working neither in L2 mode or L3 mode, then
+     * apply L2 config*/
+    if(IF_L2_MODE(interface) == L2_MODE_UNKNOWN){
+        IF_L2_MODE(interface) = intf_l2_mode;
+        return;
+    }
+
+    /*case 3 : if interface is operating in same mode, and user config same mode
+     * again, then do nothing*/
+    if(IF_L2_MODE(interface) == intf_l2_mode){
+        return;
+    }
+
+    /*case 4 : if interface is operating in access mode, and user config trunk mode,
+     * then overwrite*/
+    if(IF_L2_MODE(interface) == ACCESS &&
+            intf_l2_mode == TRUNK){
+        IF_L2_MODE(interface) = intf_l2_mode;
+        return;
+    }
+
+    /* case 5 : if interface is operating in trunk mode, and user config access mode,
+     * then overwrite, remove all vlans from interface, user must enable vlan again
+     * on interface*/
+    if(IF_L2_MODE(interface) == TRUNK &&
+           intf_l2_mode == ACCESS){
+
+        IF_L2_MODE(interface) = intf_l2_mode;
+
+        unsigned int i = 0;
+
+//        for ( ; i < MAX_VLAN_MEMBERSHIP; i++){
+//            interface->intf_nw_props.vlans[i] = 0;
+//        }
+    }
+}
+
+
+void nodeSetInfL2Mode(node_t *node, char *infName, intfL2Mode_t l2Mode)
+{
+	interface_t *interface = getNodeIfByName(node, infName);
+	assert(interface);
+	interfaceSetL2Mode(node, interface, intfL2ModeStr(l2Mode));
 }
 

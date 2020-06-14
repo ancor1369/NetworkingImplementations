@@ -29,6 +29,10 @@
     (*(unsigned int *)(((char *)(((ethernet_heather_t *)eth_hdr_ptr)->payload) + payload_size)))
 
 
+typedef struct mac_table_{
+	gddl_t macEntries;
+}mac_table_t;
+
 /*ARP Table APIs*/
 typedef struct arp_table_{
     gddl_t arp_entries;
@@ -115,8 +119,7 @@ static inline bool_t l2FrameReceivedQulifyOnInterface(interface_t *interface, et
 }
 
 
-static inline char *
-GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
+static inline char * GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
 
 //   if(is_pkt_vlan_tagged(ethernet_hdr)){
 //        return ((vlan_ethernet_hdr_t *)(ethernet_hdr))->payload;
@@ -124,5 +127,8 @@ GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
 //   else
        return ethernet_hdr->payload;
 }
+
+void nodeSetInfL2Mode(node_t *node, char *infName, intfL2Mode_t l2Mode);
+
 
 #endif /* LAYER2_LAYER2_H_ */
