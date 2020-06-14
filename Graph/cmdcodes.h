@@ -13,5 +13,7 @@
 #define CMDCODE_SHOW_NODE_ARP_TABLE 3   /*show node <node-name> arp*/
 #define CMDCODE_RUN_ARP             4   /*run node <node-name> resolve-arp <ip-address>*/
 
+#define CMDCODE_SHOW_NODE_MAC_TABLE 8   /*show node <node-name> mac*/
+
 
 #endif /* CMDCODES_H_ */

@@ -22,10 +22,14 @@
 #define HUB         (1 << 2)
 
 #define NODE_ARP_TABLE(node_ptr)    (node_ptr->nodeNwkProp.arpTable)
+#define NODE_MAC_TABLE(node_ptr)    (node_ptr->nodeNwkProp.mac_table)
+#define IS_INTF_L3_MODE(intf_ptr)   (intf_ptr->nodeNwkProp.isLbAddrConfig == TRUE)
+
 
 typedef struct graph_ graph_t;
 typedef struct interface_ interface_t;
 typedef struct node_ node_t;
+typedef struct mac_table_ mac_table_t;
 
 typedef enum{
 

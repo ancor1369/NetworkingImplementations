@@ -12,13 +12,13 @@
 #include "../comm.h"
 
 
-typedef struct macTableEntry_{
-	macAddr_t mac;//key
-	char oifName[IF_NAME_SIZE];
-	gddl_t macEntryGlue //For linked list insertion
-}macTableEntry_t;
 
+extern void layer3_pkt_recv(node_t *node, interface_t *interface,char *pkt, unsigned int pkt_size);
 
+static void promotePktToLayer3(node_t *node, interface_t *interface, char *pkt, unsigned int pkt_size)
+{
+	layer3_pkt_recv(node, interface, pkt, pkt_size);
+}
 
 
 static inline ethernet_heather_t * Alloc_eth_Header_with_Payload(char *pkt, unsigned pkt_size)
@@ -236,6 +236,9 @@ static void processArpBroadcastRequest(node_t *node, interface_t *iif, ethernet_
 	sendArpReplyMessage(ethernetHeader, iif);
 }
 
+//This enables the function to be visible from this file
+extern void l2SwitchRecvFrame(interface_t *interface,char *pkt, unsigned int pkt_size);
+
 void layer2_frame_recv(node_t *node, interface_t *interface,char *pkt, unsigned int pkt_size)
 {
     unsigned int vlan_id_to_tag = 0;
@@ -250,27 +253,35 @@ void layer2_frame_recv(node_t *node, interface_t *interface,char *pkt, unsigned 
 
     printf("L2 Frame Accepted on node %s\n", node->node_name);
 
-    switch(ethernet_hdr->type)
+    if(IS_INTF_L3_MODE(interface))
     {
-    case ARP_MSG:
-		{
-			arp_header_t *arp_header = (arp_header_t *)(ethernet_hdr->payload);
-			switch (arp_header->opCode) {
-				case ARP_BROAD_REQ:
-					processArpBroadcastRequest(node, interface, ethernet_hdr);
-					break;
-				case ARP_REPLY:
-					processArpReployMessage(node, interface, ethernet_hdr);
-					break;
-				default:
-					break;
-			}
-		}
-		break;
-    default:
-    	//promotePktToLayer3(node,interface,pkt,pkt_size);
-    	break;
 
+		switch(ethernet_hdr->type)
+		{
+		case ARP_MSG:
+			{
+				arp_header_t *arp_header = (arp_header_t *)(ethernet_hdr->payload);
+				switch (arp_header->opCode) {
+					case ARP_BROAD_REQ:
+						processArpBroadcastRequest(node, interface, ethernet_hdr);
+						break;
+					case ARP_REPLY:
+						processArpReployMessage(node, interface, ethernet_hdr);
+						break;
+					default:
+						break;
+				}
+			}
+			break;
+		default:
+			promotePktToLayer3(node,interface,pkt,pkt_size);
+			break;
+
+		}
+    }
+    else if(IF_L2_MODE(interface) == ACCESS || IF_L2_MODE(interface) == TRUNK)
+    {
+    	l2SwitchRecvFrame(interface, pkt, pkt_size);
     }
 }
 
