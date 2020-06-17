@@ -10,6 +10,8 @@
 #include "../graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../comm.h"
+
 
 
 
@@ -102,6 +104,8 @@ void dump_mac_table(mac_table_t *mac_table)
     }ITERATE_GDDL_END(&mac_table->macEntries, curr);
 }
 
+
+
 static void l2_switch_perform_mac_learning(node_t *node, char *src_mac, char *if_name){
 
     bool_t rc;
@@ -116,31 +120,35 @@ static void l2_switch_perform_mac_learning(node_t *node, char *src_mac, char *if
     }
 }
 
-static void l2_switch_forward_frame(node_t *node, interface_t *recv_intf, ethernet_heather_t *ethernet_hdr,unsigned int pkt_size)
-{
+
+
+
+static void l2_switch_forward_frame(node_t *node, interface_t *recv_intf,
+                        char *pkt, unsigned int pkt_size){
+
     /*If dst mac is broadcast mac, then flood the frame*/
+    ethernet_heather_t *ethernet_hdr = (ethernet_heather_t *)pkt;
     if(IS_MAC_BROADCAST_ADDR(ethernet_hdr->dstMAC.mac)){
-        l2_switch_flood_pkt_out(node, recv_intf, (char *)ethernet_hdr, pkt_size);
+        sendPktFlood(node, recv_intf, pkt, pkt_size);
         return;
     }
 
     /*Check the mac table to forward the frame*/
     macTableEntry_t *mac_table_entry =
-        macTableLookUp(NODE_MAC_TABLE(node), ethernet_hdr->dstMAC.mac);
+	macTableLookUp(NODE_MAC_TABLE(node), ethernet_hdr->dstMAC.mac);
+
 
     if(!mac_table_entry){
-        l2_switch_flood_pkt_out(node, recv_intf, (char *)ethernet_hdr, pkt_size);
+    	sendPktFlood(node, recv_intf, pkt, pkt_size);
         return;
     }
 
     char *oif_name = mac_table_entry->oifName;
-    interface_t *oif = get_node_if_by_name(node, oif_name);
-
+    interface_t *oif = getNodeIfByName(node, oif_name);
     if(!oif){
         return;
     }
-
-    l2_switch_send_pkt_out((char *)ethernet_hdr, pkt_size, oif);
+    sendPktOut(pkt, pkt_size, oif);
 }
 
 

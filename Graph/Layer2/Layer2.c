@@ -17,7 +17,7 @@ extern void layer3_pkt_recv(node_t *node, interface_t *interface,char *pkt, unsi
 
 static void promotePktToLayer3(node_t *node, interface_t *interface, char *pkt, unsigned int pkt_size)
 {
-	layer3_pkt_recv(node, interface, pkt, pkt_size);
+	//layer3_pkt_recv(node, interface, pkt, pkt_size);
 }
 
 
