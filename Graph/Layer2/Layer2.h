@@ -11,6 +11,7 @@
 #include "../net/net.h"
 #include "../gddl/gddl.h"
 #include "../graph.h"
+#include "../tcpconstants.h"
 
 #define ARP_BROAD_REQ   1
 
@@ -22,15 +23,18 @@
 	(sizeof(ethernet_heather_t) - sizeof(((ethernet_heather_t *)0)->payload))
 
 
-//#define ETH_FCS(ethernet_heather_t_ptr, payload_size) \
-//	(*(unsigned int *)(((char *)(((ethernet_heather_t *)ethernet_heather_t_ptr).payload) + payload_size)))
-
 #define ETH_FCS(eth_hdr_ptr, payload_size)  \
     (*(unsigned int *)(((char *)(((ethernet_heather_t *)eth_hdr_ptr)->payload) + payload_size)))
 
+#define VLAN_ETH_FCS(vlan_eth_hdr_ptr, payload_size)  \
+    (*(unsigned int *)(((char *)(((vlan_ethernet_header_t *)vlan_eth_hdr_ptr)->payload) + payload_size)))
 
+#define VLAN_ETH_HDR_SIZE_EXCL_PAYLOAD  \
+   (sizeof(vlan_ethernet_header_t) - sizeof(((vlan_ethernet_header_t *)0)->payload))
 
-
+#define GET_COMMON_ETH_FCS(eth_hdr_ptr, payload_size)   \
+        (is_pkt_vlan_tagged(eth_hdr_ptr) ? VLAN_ETH_FCS(eth_hdr_ptr, payload_size) : \
+            ETH_FCS(eth_hdr_ptr, payload_size))
 
 /*ARP Table APIs*/
 typedef struct arp_table_{
@@ -63,7 +67,7 @@ typedef struct vlan_ethernet_header_{
 	unsigned short type;
 	char payload[248]; //This is allowed to as big as 1500
 	unsigned int FCS;
-}vlan_ethernet_heather_t;
+}vlan_ethernet_header_t;
 
 
 typedef struct arp_header_{
@@ -90,7 +94,47 @@ typedef struct ethernet_header_{
 #pragma pack(pop)
 
 
+static inline unsigned int GET_802_1Q_VLAN_ID(vlan_8021q_header_t *vlan_8021q_hdr){
 
+    return (unsigned int)vlan_8021q_hdr->tci_vid;
+}
+
+
+
+static inline vlan_8021q_header_t* is_pkt_vlan_tagged(ethernet_heather_t *ethernet_hdr){
+
+    /*Check the 13th and 14th byte of the ethernet hdr,
+     *      * if is value is 0x8100 then it is vlan tagged*/
+
+    vlan_8021q_header_t *vlan_8021q_hdr =
+        (vlan_8021q_header_t *)((char *)ethernet_hdr + (sizeof(macAddr_t) * 2));
+
+    if(vlan_8021q_hdr->tpid == VLAN_8021Q_PROTO)
+        return vlan_8021q_hdr;
+
+    return NULL;
+}
+
+static inline char * GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
+
+   if(is_pkt_vlan_tagged(ethernet_hdr)){
+        return ((vlan_ethernet_header_t *)(ethernet_hdr))->payload;
+   }
+   else
+       return ethernet_hdr->payload;
+}
+
+static inline void SET_COMMON_ETH_FCS(ethernet_heather_t *ethernet_hdr,
+                   unsigned int payload_size,
+                   unsigned int new_fcs){
+
+    if(is_pkt_vlan_tagged(ethernet_hdr)){
+        VLAN_ETH_FCS(ethernet_hdr, payload_size) = new_fcs;
+    }
+    else{
+        ETH_FCS(ethernet_hdr, payload_size) = new_fcs;
+    }
+}
 
 //APIS to support the operation of ARP protocol
 void initArpTable(arp_table_t **arp_table);
@@ -138,14 +182,29 @@ static inline bool_t l2FrameReceivedQulifyOnInterface(interface_t *interface, et
 }
 
 
-static inline char * GET_ETHERNET_HDR_PAYLOAD(ethernet_heather_t *ethernet_hdr){
+static inline unsigned int GET_ETH_HDR_SIZE_EXCL_PAYLOAD(ethernet_heather_t *ethernet_hdr){
 
-//   if(is_pkt_vlan_tagged(ethernet_hdr)){
-//        return ((vlan_ethernet_hdr_t *)(ethernet_hdr))->payload;
-//   }
-//   else
-       return ethernet_hdr->payload;
+    if(is_pkt_vlan_tagged(ethernet_hdr)){
+        return VLAN_ETH_HDR_SIZE_EXCL_PAYLOAD;
+    }
+    else{
+        return ETH_HDR_SIZE_EXCL_PAYLOAD;
+    }
 }
+
+static inline ethernet_heather_t * ALLOC_ETH_HDR_WITH_PAYLOAD(char *pkt, unsigned int pkt_size){
+
+    char *temp = calloc(1, pkt_size);
+    memcpy(temp, pkt, pkt_size);
+
+    ethernet_heather_t *eth_hdr = (ethernet_heather_t *)(pkt - ETH_HDR_SIZE_EXCL_PAYLOAD);
+    memset((char *)eth_hdr, 0, ETH_HDR_SIZE_EXCL_PAYLOAD);
+    memcpy(eth_hdr->payload, temp, pkt_size);
+    SET_COMMON_ETH_FCS(eth_hdr, pkt_size, 0);
+    free(temp);
+    return eth_hdr;
+}
+
 
 void nodeSetInfL2Mode(node_t *node, char *infName, intfL2Mode_t l2Mode);
 
