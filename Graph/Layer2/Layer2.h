@@ -46,6 +46,26 @@ typedef struct arp_entry_{
 
 
 #pragma pack (push, 1)
+typedef struct vlan_8021q_header_{
+
+	unsigned short tpid; //0x8100
+	short tci_pcp : 3; //Not used in the course
+	short tci_dei : 1; //Not used
+	short tci_vid : 12; //tagged Vlan ID
+
+}vlan_8021q_header_t;
+
+typedef struct vlan_ethernet_header_{
+
+	macAddr_t dstMAC;
+	macAddr_t srcMAC;
+	vlan_8021q_header_t vlan_8021q_header;
+	unsigned short type;
+	char payload[248]; //This is allowed to as big as 1500
+	unsigned int FCS;
+}vlan_ethernet_heather_t;
+
+
 typedef struct arp_header_{
 	short hwType;
 	short protoType;
